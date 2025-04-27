@@ -4,11 +4,19 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import InterviewCard from "@/components/InterviewCard";
 import { dummyInterviews } from "@/constants";
+import { getCurrentUser, getInterviewsByUserId, getLatestInterviews } from "@/lib/actions/auth.action";
 
 
 
 async function Home() {
+  const user = await getCurrentUser();
 
+  const [userInterviews, latestInterviews] = await Promise.all([
+    await getInterviewsByUserId(user?.id!),
+    await getLatestInterviews({ userId: user?.id! })
+  ])
+  const hasPastInterviews = userInterviews!?.length > 0;
+  const hasUpcomingInterviews = latestInterviews!?.length > 0;
   return (
     <>
       <section className="card-cta">
@@ -36,7 +44,8 @@ async function Home() {
         <h2>Your Interviews</h2>
 
         <div className="interviews-section">
-          {dummyInterviews.map((interview) => (
+          {hasPastInterviews ? (
+            userInterviews?.map((interview) => (
               <InterviewCard
                 key={interview.id}
                 userId={interview?.userId}
@@ -46,7 +55,10 @@ async function Home() {
                 techstack={interview.techstack}
                 createdAt={interview.createdAt}
               />
-            ))}
+            )
+            )) : (
+            <p>You have not taken any interviews yet</p>
+          )}
         </div>
       </section>
 
@@ -54,7 +66,8 @@ async function Home() {
         <h2>Take Interviews</h2>
 
         <div className="interviews-section">
-        {dummyInterviews.map((interview) => (
+          {hasUpcomingInterviews ? (
+            latestInterviews?.map((interview) => (
               <InterviewCard
                 key={interview.id}
                 userId={interview?.userId}
@@ -64,7 +77,10 @@ async function Home() {
                 techstack={interview.techstack}
                 createdAt={interview.createdAt}
               />
-            ))}
+            )
+            )) : (
+            <p>There are No interview availble here</p>
+          )}
         </div>
       </section>
     </>
