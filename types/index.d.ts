@@ -83,6 +83,14 @@ interface SignUpParams {
   password: string;
 }
 
+interface OAuthSignInParams {
+  uid: string;
+  name: string;
+  email: string;
+  photoURL?: string;
+  provider: 'google' | 'github';
+  idToken: string;
+}
 type FormType = "sign-in" | "sign-up";
 
 interface InterviewFormProps {
