@@ -4,8 +4,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import InterviewCard from "@/components/InterviewCard";
 import { dummyInterviews } from "@/constants";
-import { getCurrentUser, getInterviewsByUserId, getLatestInterviews } from "@/lib/actions/auth.action";
-
+import { getCurrentUser} from "@/lib/actions/auth.action";
+import {getInterviewsByUserId, getLatestInterviews } from "@/lib/actions/general.action";
 
 
 async function Home() {
@@ -49,7 +49,7 @@ async function Home() {
               <InterviewCard
                 key={interview.id}
                 userId={interview?.userId}
-                interviewId={interview.id}
+                id={interview.id}
                 role={interview.role}
                 type={interview.type}
                 techstack={interview.techstack}
@@ -71,7 +71,7 @@ async function Home() {
               <InterviewCard
                 key={interview.id}
                 userId={interview?.userId}
-                interviewId={interview.id}
+                id={interview.id}
                 role={interview.role}
                 type={interview.type}
                 techstack={interview.techstack}
