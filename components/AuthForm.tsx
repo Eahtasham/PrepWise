@@ -47,12 +47,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
         const { name, email, password } = values;
 
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const userDetails = {
-          email,
-          name: name!,
-          provider: "email",
-        };
-        localStorage.setItem("UserRegData", JSON.stringify(userDetails));
+        // const userDetails = {
+        //   email,
+        //   name: name!,
+        //   provider: "email",
+        // };
+        // localStorage.setItem("UserRegData", JSON.stringify(userDetails));
         await sendEmailVerification(userCredential.user);
         const result = await signUp({
           uid: userCredential.user.uid,

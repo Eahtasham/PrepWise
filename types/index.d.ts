@@ -35,6 +35,11 @@ interface CreateFeedbackParams {
 interface User {
   name: string;
   email: string;
+  isVerified: boolean;
+  isPro: boolean;
+  provider: string;
+  photoURL?: string;
+  createdAt: string;
   id: string;
 }
 
