@@ -35,6 +35,11 @@ interface CreateFeedbackParams {
 interface User {
   name: string;
   email: string;
+  isVerified: boolean;
+  isPro: boolean;
+  provider: string;
+  photoURL?: string;
+  createdAt: string;
   id: string;
 }
 
@@ -83,6 +88,14 @@ interface SignUpParams {
   password: string;
 }
 
+interface OAuthSignInParams {
+  uid: string;
+  name: string;
+  email: string;
+  photoURL?: string;
+  provider: 'google' | 'github';
+  idToken: string;
+}
 type FormType = "sign-in" | "sign-up";
 
 interface InterviewFormProps {
