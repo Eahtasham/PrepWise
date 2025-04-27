@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { browserSessionPersistence, createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, sendEmailVerification, setPersistence, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+import { createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, sendEmailVerification, setPersistence, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import { auth } from '@/firebase/client'
 import { signUp, signIn, oauthSignIn } from '@/lib/actions/auth.action'
 
