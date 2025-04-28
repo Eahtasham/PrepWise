@@ -202,3 +202,10 @@ export async function isAuthenticated() {
     const user = await getCurrentUser();
     return !!user;
 }
+
+// Sign out user by clearing the session cookie
+export async function signOut() {
+    const cookieStore = await cookies();
+  
+    cookieStore.delete("session");
+  }
