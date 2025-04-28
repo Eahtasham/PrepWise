@@ -5,7 +5,8 @@ import { cn } from '@/lib/utils';
 import { vapi } from '@/lib/vapi.sdk';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
+import Webcam from 'react-webcam';
 
 enum CallStatus {
     INACTIVE = "INACTIVE",
@@ -24,8 +25,9 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
     const [messages, setMessages] = useState<SavedMessage[]>([]);
-    // const lastMessage = messages[messages.length - 1];
-
+    const [webcamActive, setWebcamActive] = useState(false);
+    const webcamRef = useRef<Webcam>(null);
+    
     useEffect(() => {
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
         const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
@@ -70,15 +72,17 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
             router.push(`/interview/${interviewId}/feedback`)
         } else {
             console.log("Error generating feedback");
-            router.push("/");
+            router.push("/dashboard");
         }
     }
 
-
     useEffect(() => {
         if (callStatus === CallStatus.FINISHED) {
+            // Stop webcam when call ends
+            setWebcamActive(false);
+            
             if (type === "generate") {
-                router.push("/");
+                router.push("/dashboard");
             } else {
                 handleGenerateFeedback(messages);
             }
@@ -87,6 +91,9 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
 
     const handleCall = async () => {
         setCallStatus(CallStatus.CONNECTING);
+        // Activate webcam when call begins
+        setWebcamActive(true);
+        
         if (type === "generate") {
             await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
                 variableValues: {
@@ -103,22 +110,28 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
             }
 
             await vapi.start(interviewer, {
-                variableValues :{
+                variableValues: {
                     questions: formattedQuestions
                 }
             })
         }
-
     }
 
     const handleDisconnect = async () => {
         setCallStatus(CallStatus.FINISHED);
+        setWebcamActive(false);
         vapi.stop();
     }
 
     const latestMessage = messages[messages.length - 1]?.content;
     const isCallInactiveOrFinished = callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
 
+    // Webcam video constraints
+    const videoConstraints = {
+        width: 1280,
+        height: 720,
+        facingMode: "user"
+    };
 
     return (
         <>
@@ -141,17 +154,27 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
                 {/* User Profile Card */}
                 <div className="card-border">
                     <div className="card-content">
-                        <Image
-                            src="/user-avatar.png"
-                            alt="profile-image"
-                            width={539}
-                            height={539}
-                            className="rounded-full object-cover size-[120px]"
-                        />
+                        {webcamActive ? (
+                            <Webcam
+                                ref={webcamRef}
+                                audio={false}
+                                videoConstraints={videoConstraints}
+                                screenshotFormat="image/jpeg"
+                                mirrored={true}
+                                className="rounded-md object-cover"
+                            />
+                        ) : (
+                            <Image
+                                src="/user-avatar.png"
+                                alt="profile-image"
+                                width={539}
+                                height={539}
+                                className="rounded-full object-cover size-[120px]"
+                            />
+                        )}
                         <h3>{userName}</h3>
                     </div>
                 </div>
-
             </div>
 
             <div className="w-full flex justify-center">
@@ -172,8 +195,7 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
                     <button className="btn-disconnect" onClick={handleDisconnect}>
                         End
                     </button>
-                )
-                }
+                )}
             </div>
 
             {messages.length > 0 && (
@@ -183,10 +205,8 @@ const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) =
                             {latestMessage}
                         </p>
                     </div>
-
                 </div>
-            )
-            }
+            )}
         </>
     )
 }

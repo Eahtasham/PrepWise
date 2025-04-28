@@ -98,7 +98,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
           return;
         }
         toast.success("Logged in successfully, redirecting to dashboard");
-        router.push("/");
+        router.push("/dashboard");
       }
     } catch (error:any) {
       console.log("error", error);
@@ -110,10 +110,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
         errorMessage = "Invalid email or password";
       } else if (error.code === 'auth/email-already-in-use') {
         errorMessage = "This email is already in use";
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = "Invalid email format";
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage = "Password is too weak";
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = "Invalid Credential";
       } else if (error.code === 'auth/too-many-requests') {
         errorMessage = "Too many attempts. Please try again later";
       }
@@ -184,7 +182,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       }
 
       toast.success("Logged in successfully, redirecting to dashboard");
-      router.push("/");
+      router.push("/dashboard");
     } catch (error: any) {
       console.error("OAuth error:", error);
 
