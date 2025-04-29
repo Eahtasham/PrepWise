@@ -22,8 +22,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 import { isAuthenticated } from "@/lib/actions/auth.action"
-  const isUserAuthenticated = await isAuthenticated();
-  if (isUserAuthenticated) redirect ('/dashboard');
+//   const isUserAuthenticated = await isAuthenticated();
+//   if (isUserAuthenticated) redirect ('/dashboard');
 
 
 export default function Home() {
