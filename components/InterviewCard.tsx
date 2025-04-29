@@ -8,27 +8,29 @@ import DisplayTechIcons from "./DisplayTechIcons";
 import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
 
 
-const InterviewCard = async({
+const InterviewCard = async ({
     id,
     userId,
     role,
     type,
+    coverImage,
+    finalized,
     techstack,
     createdAt,
 }: InterviewCardProps) => {
-    const feedback = userId && id ? await getFeedbackByInterviewId({interviewId:id,userId}) : null;
+    const feedback = userId && id ? await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
 
     const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
     const badgeColor =
-    {
-      Behavioral: "bg-light-400",
-      Mixed: "bg-light-600",
-      Technical: "bg-light-800",
-    }[normalizedType] || "bg-light-600";
+        {
+            Behavioral: "bg-light-400",
+            Mixed: "bg-light-600",
+            Technical: "bg-light-800",
+        }[normalizedType] || "bg-light-600";
     const formattedDate = dayjs(
         feedback?.createdAt || createdAt || Date.now()
     ).format("MMM D, YYYY");
-
+    // console.log(coverImage);
     return (
         <div className="card-border w-[360px] max-sm:w-full min-h-96">
             <div className="card-interview">
@@ -45,7 +47,7 @@ const InterviewCard = async({
 
                     {/* Cover Image */}
                     <Image
-                        src={getRandomInterviewCover()}
+                        src={coverImage || getRandomInterviewCover()}
                         alt="cover-image"
                         width={90}
                         height={90}
@@ -79,11 +81,22 @@ const InterviewCard = async({
                             "You haven't taken this interview yet. Take it now to improve your skills."}
                     </p>
                 </div>
-
-                <div className="flex flex-row justify-between">
-                    <DisplayTechIcons techStack={techstack} />
-
-                    <Button className="btn-primary">
+                <DisplayTechIcons techStack={techstack} />
+                <div className="flex flex-row justify-end gap-x-2">
+                    
+                    {feedback && <Button className="w-fit !rounded-full !font-bold px-5 cursor-pointer min-h-10" variant="outline">
+                        <Link
+                            href={
+                                feedback
+                                    ? `/interview/${id}`
+                                    : `/interview/${id}`
+                            }
+                        >
+                            {feedback ? "Retake Interview" : "View Interview"}
+                        </Link>
+                    </Button>
+}
+                    {<Button className="justify-end btn-primary">
                         <Link
                             href={
                                 feedback
@@ -91,9 +104,10 @@ const InterviewCard = async({
                                     : `/interview/${id}`
                             }
                         >
-                            {feedback ? "Check Feedback" : "View Interview"}
+                            {feedback ? "Check Feedback" : "Take Interview"}
                         </Link>
                     </Button>
+                    }
                 </div>
             </div>
         </div>

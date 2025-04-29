@@ -57,7 +57,16 @@ export async function createFeedback(params: CreateFeedbackParams) {
             feedbackRef = db.collection("feedback").doc();
         }
 
-        await feedbackRef.set(feedback);
+        // await feedbackRef.set(feedback);
+        const batch = db.batch();
+        
+        batch.set(feedbackRef, feedback);
+        
+        const interviewRef = db.collection("interviews").doc(interviewId);
+        batch.update(interviewRef, { finalized: true });
+        
+        // Commit the batch
+        await batch.commit();
 
         return { success: true, feedbackId: feedbackRef.id };
     } catch (error) {
@@ -103,8 +112,8 @@ export async function getLatestInterviews(params: GetLatestInterviewsParams): Pr
     const interviews = await db
         .collection("interviews")
         .orderBy("createdAt", "desc")
-        .where("finalized", "==", true)
-        .where("userId", "!=", userId)
+        .where("finalized", "==", false)
+        .where("userId", "==", userId)
         .limit(limit)
         .get();
 
