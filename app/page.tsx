@@ -20,31 +20,13 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { redirect } from "next/navigation"
+import { isAuthenticated } from "@/lib/actions/auth.action"
+  const isUserAuthenticated = await isAuthenticated();
+  if (isUserAuthenticated) redirect ('/dashboard');
+
 
 export default function Home() {
-    const [activeTestimonial, setActiveTestimonial] = useState(0)
-
-    const testimonials = [
-        {
-            name: "Jane Smith",
-            role: "Product Manager",
-            image: "/placeholder.svg?height=80&width=80",
-            quote: "The interview simulations are so realistic. I felt much more confident in my actual interviews.",
-        },
-        {
-            name: "David Chen",
-            role: "Software Engineer",
-            image: "/placeholder.svg?height=80&width=80",
-            quote: "The AI feedback helped me identify weaknesses in my responses that I never would have noticed otherwise.",
-        },
-        {
-            name: "Sarah Johnson",
-            role: "UX Designer",
-            image: "/placeholder.svg?height=80&width=80",
-            quote:
-                "After just two weeks of practice, I aced my interview at a top tech company. This platform is a game-changer!",
-        },
-    ]
 
     const features = [
         {
