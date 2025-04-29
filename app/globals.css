@@ -10,8 +10,8 @@
   --color-destructive-100: #f75353;
   --color-destructive-200: #c44141;
 
-  --color-primary-100: #dddfff;
-  --color-primary-200: #cac5fe;
+  --color-primary-100: var(--color-teal-400) ;
+  --color-primary-200: var(--color-teal-500);
 
   --color-light-100: #d6e0ff;
   --color-light-400: #6870a6;
@@ -299,7 +299,7 @@
 }
 
 @utility dark-gradient {
-  @apply bg-gradient-to-b from-[#1A1C20] to-[#08090D];
+  @apply bg-gradient-to-b from-[#1a2020] to-[#080c0d];
 }
 
 @utility border-gradient {
@@ -311,7 +311,7 @@
 }
 
 @utility blue-gradient-dark {
-  @apply bg-gradient-to-b from-[#171532] to-[#08090D];
+  @apply bg-gradient-to-b from-[#132b2d] to-[#080d0d];
 }
 
 @utility blue-gradient {
