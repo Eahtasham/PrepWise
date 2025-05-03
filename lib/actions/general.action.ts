@@ -59,12 +59,12 @@ export async function createFeedback(params: CreateFeedbackParams) {
 
         // await feedbackRef.set(feedback);
         const batch = db.batch();
-        
+
         batch.set(feedbackRef, feedback);
-        
+
         const interviewRef = db.collection("interviews").doc(interviewId);
         batch.update(interviewRef, { finalized: true });
-        
+
         // Commit the batch
         await batch.commit();
 
@@ -77,21 +77,37 @@ export async function createFeedback(params: CreateFeedbackParams) {
 
 export async function getFeedbackByInterviewId(
     params: GetFeedbackByInterviewIdParams
-  ): Promise<Feedback | null> {
+): Promise<Feedback | null> {
     const { interviewId, userId } = params;
-  
+
     const querySnapshot = await db
-      .collection("feedback")
-      .where("interviewId", "==", interviewId)
-      .where("userId", "==", userId)
-      .limit(1)
-      .get();
-  
+        .collection("feedback")
+        .where("interviewId", "==", interviewId)
+        .where("userId", "==", userId)
+        .limit(1)
+        .get();
+
     if (querySnapshot.empty) return null;
-  
+
     const feedbackDoc = querySnapshot.docs[0];
     return { id: feedbackDoc.id, ...feedbackDoc.data() } as Feedback;
-  }
+}
+
+export async function getFeedbackByUserId(
+    params: GetFeedbackByUserIdParams
+): Promise<Feedback | null> {
+    const { userId } = params;
+
+    const querySnapshot = await db
+        .collection("feedback")
+        .where("userId", "==", userId)
+        .get();
+
+    if (querySnapshot.empty) return null;
+
+    const feedbackDoc = querySnapshot.docs[0];
+    return { id: feedbackDoc.id, ...feedbackDoc.data() } as Feedback;
+}
 
 export async function getInterviewsByUserId(userid: string): Promise<Interview[] | null> {
     const interviews = await db
