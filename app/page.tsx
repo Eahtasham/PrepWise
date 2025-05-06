@@ -154,7 +154,7 @@ export default function Home() {
     const [currentReview, setCurrentReview] = useState(0)
 
     return (
-        <div className="min-h-screen text-white">
+        <div className="min-h-screen text-white mx-10">
             {/* Navigation */}
             <header className="container mx-auto px-4 py-6">
                 <div className="flex justify-between items-center">

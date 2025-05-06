@@ -299,7 +299,7 @@
 }
 
 @utility dark-gradient {
-  @apply bg-gradient-to-b from-[#1a2020] to-[#080c0d];
+  @apply bg-gradient-to-b from-[#0d1c1c] to-[#080c0d];
 }
 
 @utility border-gradient {
