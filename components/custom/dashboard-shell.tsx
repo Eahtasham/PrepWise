@@ -43,16 +43,16 @@ const navItems: NavItem[] = [
     href: "/dashboard/all-interviews",
     icon: ListTodo,
   },
-  {
-    title: "Billing",
-    href: "/dashboard/billing",
-    icon: Receipt,
-  },
-  {
-    title: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
+  // {
+  //   title: "Billing",
+  //   href: "/dashboard/billing",
+  //   icon: Receipt,
+  // },
+  // {
+  //   title: "Settings",
+  //   href: "/dashboard/settings",
+  //   icon: Settings,
+  // },
 ]
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -100,7 +100,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
           </div>
-          <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
+          {/* <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex-shrink-0 w-full group block">
@@ -133,7 +133,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -142,11 +142,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <SheetContent side="left" className="p-0 w-72 bg-stone-950 border-r border-gray-800">
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
             <Link href="/dashboard" className="flex items-center">
-              <span className="text-xl font-semibold text-teal-500">InterviewAI</span>
+              <span className="text-xl font-semibold text-teal-500">PrepWise</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)}>
+            {/* <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)}>
               <X className="h-5 w-5 text-gray-400" />
-            </Button>
+            </Button> */}
           </div>
           <div className="flex flex-col flex-1 pt-5 pb-4 overflow-y-auto">
             <div className="px-4 mb-6">
@@ -180,7 +180,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
           </div>
-          <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
+          {/* <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
             <button className="flex-shrink-0 w-full group block">
               <div className="flex items-center">
                 <div>
@@ -195,22 +195,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </button>
-          </div>
+          </div> */}
         </SheetContent>
 
         {/* Main Content */}
         <div className="md:pl-64 flex flex-col flex-1">
           <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-stone-950 border-b border-gray-800 md:hidden">
-            <SheetTrigger asChild>
+            <div className="flex-1 flex justify-between mx-4 px-auto">
+              <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="px-4 text-gray-400 focus:outline-none">
                 <span className="sr-only">Open sidebar</span>
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <div className="flex-1 flex justify-between px-4">
-              <div className="flex-1 flex items-center">
-                <span className="text-xl font-semibold text-teal-500">InterviewAI</span>
-              </div>
               <div className="ml-4 flex items-center md:ml-6 space-x-3">
                 <Button variant="ghost" size="icon" className="text-gray-400">
                   <Bell className="h-5 w-5" />
