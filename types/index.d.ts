@@ -74,6 +74,10 @@ interface GetFeedbackByInterviewIdParams {
   userId: string;
 }
 
+interface GetFeedbackByUserIdParams {
+  userId: string;
+}
+
 interface GetLatestInterviewsParams {
   userId: string;
   limit?: number;
