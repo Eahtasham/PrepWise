@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import InterviewCard from "@/components/InterviewCard"
+import { ScheduleInterviewModal } from "./schedule-interview-modal"
 
 interface ScheduledInterviewsProps {
   user: any
@@ -23,11 +24,7 @@ export function ScheduledInterviews({ user, interviews }: ScheduledInterviewsPro
           <p className="text-gray-400 mt-1">Manage your upcoming interview practice sessions</p>
         </div>
         <div className="mt-4 md:mt-0">
-          <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white">
-            <Link href="/interview">
-              <Calendar className="mr-2 h-4 w-4" /> Schedule New
-            </Link>
-          </Button>
+          <ScheduleInterviewModal user={user} />
         </div>
       </div>
 

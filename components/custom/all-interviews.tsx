@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import InterviewCard from "@/components/InterviewCard"
+import { ScheduleInterviewModal } from "./schedule-interview-modal"
 
 interface AllInterviewsProps {
   user: any
@@ -29,11 +30,7 @@ export function AllInterviews({ user, interviews }: AllInterviewsProps) {
           <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800">
             <Download className="mr-2 h-4 w-4" /> Export Results
           </Button>
-          <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white">
-            <Link href="/interview">
-              <Calendar className="mr-2 h-4 w-4" /> New Interview
-            </Link>
-          </Button>
+          <ScheduleInterviewModal user={user} />
         </div>
       </div>
 

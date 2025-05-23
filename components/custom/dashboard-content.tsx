@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import InterviewCard from "@/components/InterviewCard"
+import { ScheduleInterviewModal } from "./schedule-interview-modal"
 
 interface DashboardContentProps {
   user: any
@@ -42,12 +43,9 @@ export default function DashboardContent({ user, userInterviews, latestInterview
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
           <p className="text-gray-400 mt-1">Welcome back, {user?.name || "User"}. Track your interview progress.</p>
         </div>
-        <div className="mt-4 md:mt-0">
-          <Button asChild className="bg-teal-500 hover:bg-teal-600 text-white">
-            <Link href="/interview">
-              <CalendarDays className="mr-2 h-4 w-4" /> Start New Interview
-            </Link>
-          </Button>
+        <div className="mt-4 md:mt-0 flex flex-wrap gap-2">
+          {/* Use the standalone modal instead */}
+          <ScheduleInterviewModal user={user} />
         </div>
       </div>
 
