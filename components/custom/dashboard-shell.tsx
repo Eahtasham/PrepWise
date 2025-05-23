@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { signOut } from "@/lib/actions/auth.action"
+import { ScheduleInterviewModal } from "./schedule-interview-modal"
 
 interface NavItem {
   title: string
@@ -55,7 +56,7 @@ const navItems: NavItem[] = [
   // },
 ]
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({ children, user }: { children: React.ReactNode, user: any }) {
   const pathname = usePathname()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -70,12 +71,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
           <div className="flex flex-col flex-1 pt-5 pb-4 overflow-y-auto">
-            <div className="px-4 mb-6">
-              <Button asChild className="w-full bg-teal-500 hover:bg-teal-600 text-white">
-                <Link href="/interview">
-                  <Plus className="mr-2 h-4 w-4" /> Start New Interview
-                </Link>
-              </Button>
+            <div className="px-6 w-full mb-6 flex items-center justify-center">
+            <ScheduleInterviewModal user={user} />
             </div>
             <nav className="mt-2 flex-1 px-2 space-y-1">
               {navItems.map((item) => (
