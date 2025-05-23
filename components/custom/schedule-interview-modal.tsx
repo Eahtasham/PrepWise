@@ -123,7 +123,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                     }
                 }}
             >
-                <DialogContent className="sm:max-w-[600px] bg-stone-950 border-gray-800 text-white">
+                <DialogContent className="sm:max-w-[600px] bg-stone-950  border-teal-800 text-white">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-semibold text-white">
                             {currentStep === "options" ? "Create New Interview" : "Manual Interview Setup"}
@@ -135,7 +135,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                             <div className="grid gap-4">
                                 {/* Manual Form Filling - Available */}
                                 <Card
-                                    className="bg-stone-950 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
+                                    className="bg-stone-950 dark-gradient border-teal-800 hover:bg-gray-750 transition-colors cursor-pointer"
                                     onClick={() => setCurrentStep("manual-form")}
                                 >
                                     <CardHeader className="pb-3">
@@ -162,7 +162,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                 </Card>
 
                                 {/* Resume Parsed - Coming Soon */}
-                                <Card className="bg-stone-950 border-gray-700 opacity-60 cursor-not-allowed">
+                                <Card className="bg-stone-950 dark-gradient border-teal-800 opacity-60 cursor-not-allowed">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
@@ -189,7 +189,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                 </Card>
 
                                 {/* Voice Interacted - Coming Soon */}
-                                <Card className="bg-stone-950 border-gray-700 opacity-60 cursor-not-allowed">
+                                <Card className="bg-stone-950 dark-gradient border-teal-800 opacity-60 cursor-not-allowed">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
@@ -219,7 +219,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                     )}
 
                     {currentStep === "manual-form" && (
-                        <div className="space-y-6 py-4">
+                        <div className="space-y-6 py-4 ">
                             <div className="flex items-center space-x-2 mb-4">
                                 <Button
                                     variant="ghost"
@@ -286,7 +286,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                     {/* Company */}
                                     <div className="space-y-2">
                                         <Label htmlFor="company" className="text-gray-300">
-                                            Company (Optional)
+                                            Company
                                         </Label>
                                         <Input
                                             id="company"
