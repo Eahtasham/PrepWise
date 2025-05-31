@@ -159,12 +159,12 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
 
     return (
         <>
-            <div className={cn("flex h-screen transition-all duration-500 ease-in-out", isCodeEditorOpen ? "gap-4 p-4" : "")}>
+            <div className={cn("flex h-screen transition-all duration-500 w-full ease-in-out", isCodeEditorOpen ? "gap-4 p-4" : "")}>
                 {/* Left Side - Interview Cards */}
                 <div
                     className={cn(
                         "transition-all duration-500 ease-in-out flex flex-col h-full",
-                        isCodeEditorOpen ? "w-1/2 h-full" : "w-full",
+                        isCodeEditorOpen ? "w-1/3 h-full" : "w-full",
                     )}
                 >
                     {/* Top Controls Bar - Only when code editor is open */}
@@ -382,7 +382,7 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
 
                 {/* Right Side - Code Editor */}
                 {isCodeEditorOpen && (
-                    <div className="w-1/2 h-full transition-all duration-500 ease-in-out transform translate-x-0">
+                    <div className="w-2/3 h-full transition-all duration-500 ease-in-out transform translate-x-0">
                         <div className="h-full bg-background rounded-lg border shadow-lg overflow-hidden">
                             <CodeEditor
                                 isOpen={true}

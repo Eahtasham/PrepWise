@@ -1,13 +1,14 @@
 "use client"
 
 import React from "react"
-
 import { useState, useRef, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Play, ChevronDown, ChevronRight, Code, FileText, Terminal, X, Maximize2, Minimize2, Copy } from "lucide-react"
+import { Play, ChevronDown, ChevronRight, Code, FileText, Terminal, X, Maximize2, Minimize2, Copy, GripHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Editor from '@monaco-editor/react'
 
 interface CodeEditorProps {
   isOpen: boolean
@@ -21,23 +22,169 @@ interface CodeEditorProps {
   }
 }
 
+// Language configurations
+const LANGUAGES = {
+  javascript: {
+    name: 'JavaScript',
+    monaco: 'javascript',
+    template: `function solution(nums, target) {
+  // Write your solution here
+  const map = new Map();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    
+    if (map.has(complement)) {
+      return [map.get(complement), i];
+    }
+    
+    map.set(nums[i], i);
+  }
+  
+  return [];
+}`,
+    color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
+  },
+  python: {
+    name: 'Python',
+    monaco: 'python',
+    template: `def solution(nums, target):
+    """
+    Write your solution here
+    """
+    num_map = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        
+        if complement in num_map:
+            return [num_map[complement], i]
+        
+        num_map[num] = i
+    
+    return []`,
+    color: 'bg-blue-500/10 text-blue-600 border-blue-500/20'
+  },
+  java: {
+    name: 'Java',
+    monaco: 'java',
+    template: `public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        // Write your solution here
+        HashMap<Integer, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            
+            if (map.containsKey(complement)) {
+                return new int[]{map.get(complement), i};
+            }
+            
+            map.put(nums[i], i);
+        }
+        
+        return new int[]{};
+    }
+}`,
+    color: 'bg-orange-500/10 text-orange-600 border-orange-500/20'
+  },
+  cpp: {
+    name: 'C++',
+    monaco: 'cpp',
+    template: `#include <vector>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Write your solution here
+        unordered_map<int, int> map;
+        
+        for (int i = 0; i < nums.size(); i++) {
+            int complement = target - nums[i];
+            
+            if (map.find(complement) != map.end()) {
+                return {map[complement], i};
+            }
+            
+            map[nums[i]] = i;
+        }
+        
+        return {};
+    }
+};`,
+    color: 'bg-purple-500/10 text-purple-600 border-purple-500/20'
+  }
+}
+
+// Resizable Panel Component
+const ResizablePanel = ({ 
+  children, 
+  height, 
+  onResize, 
+  minHeight = 100,
+  showHandle = true,
+  className = ""
+}: {
+  children: React.ReactNode
+  height: number
+  onResize: (height: number) => void
+  minHeight?: number
+  showHandle?: boolean
+  className?: string
+}) => {
+  const [isResizing, setIsResizing] = useState(false)
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+    
+    const startY = e.clientY
+    const startHeight = height
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newHeight = Math.max(minHeight, startHeight + (e.clientY - startY))
+      onResize(newHeight)
+    }
+
+    const handleMouseUp = () => {
+      setIsResizing(false)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+  }, [height, minHeight, onResize])
+
+  return (
+    <div className={className} style={{ height }}>
+      {children}
+      {showHandle && (
+        <div 
+          className={cn(
+            "h-2 bg-border hover:bg-teal-500/50 cursor-row-resize flex items-center justify-center transition-colors group",
+            isResizing && "bg-teal-500"
+          )}
+          onMouseDown={handleMouseDown}
+        >
+          <GripHorizontal className="w-4 h-4 text-muted-foreground group-hover:text-teal-500 transition-colors" />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CodeEditor({ isOpen, onClose, question, isEmbedded = false }: CodeEditorProps) {
-  const [questionHeight, setQuestionHeight] = useState(200)
+  const [questionHeight, setQuestionHeight] = useState(250)
   const [editorHeight, setEditorHeight] = useState(400)
   const [outputVisible, setOutputVisible] = useState(false)
-  const [outputHeight, setOutputHeight] = useState(200)
-  const [code, setCode] = useState(`function solution() {
-  // Write your code here
-  
-}`)
+  const [selectedLanguage, setSelectedLanguage] = useState<keyof typeof LANGUAGES>('javascript')
+  const [code, setCode] = useState(LANGUAGES.javascript.template)
   const [output, setOutput] = useState("")
   const [isRunning, setIsRunning] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-
-  const questionResizeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
-  const editorResizeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
-  const outputResizeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
-  const editorRef = useRef<HTMLTextAreaElement>(null)
 
   const defaultQuestion = {
     title: "Two Sum",
@@ -51,85 +198,216 @@ export default function CodeEditor({ isOpen, onClose, question, isEmbedded = fal
 
   const currentQuestion = question || defaultQuestion
 
-  const handleResize = useCallback(
-    (
-      ref: React.RefObject<HTMLDivElement>,
-      setter: (height: number) => void,
-      minHeight = 100,
-    ) => {
-      const startResize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.preventDefault()
-        // Convert React synthetic event to native event for resizing logic
-        const nativeEvent = e.nativeEvent
-        const startY = nativeEvent.clientY
-        const startHeight = ref.current?.offsetHeight || 0
-
-        const doResize = (moveEvent: MouseEvent) => {
-          const newHeight = Math.max(minHeight, startHeight + (moveEvent.clientY - startY))
-          setter(newHeight)
-        }
-
-        const stopResize = () => {
-          document.removeEventListener("mousemove", doResize)
-          document.removeEventListener("mouseup", stopResize)
-        }
-
-        document.addEventListener("mousemove", doResize)
-        document.addEventListener("mouseup", stopResize)
-      }
-
-      return startResize
-    },
-    [],
-  )
+  // Handle language change
+  const handleLanguageChange = (language: string) => {
+    const lang = language as keyof typeof LANGUAGES
+    setSelectedLanguage(lang)
+    setCode(LANGUAGES[lang].template)
+  }
 
   const runCode = () => {
     setIsRunning(true)
-    setOutputVisible(true)
+    setOutputVisible(true) // Automatically open output section
 
-    // Simulate code execution
+    // Simulate code execution with language-specific output
     setTimeout(() => {
-      setOutput(`Running code...
-      
+      const langName = LANGUAGES[selectedLanguage].name
+      setOutput(`🚀 Running your ${langName} solution...
+
+Test Case 1:
 Input: nums = [2,7,11,15], target = 9
-Output: [0,1]
-Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+Expected: [0,1]
+Your Output: [0,1]
+✅ PASSED
 
-✅ Test case 1 passed
-✅ Test case 2 passed
-❌ Test case 3 failed: Expected [1,2] but got [0,1]
+Test Case 2:
+Input: nums = [3,2,4], target = 6
+Expected: [1,2]
+Your Output: [1,2]
+✅ PASSED
 
-Runtime: 64ms
-Memory: 42.1MB`)
+Test Case 3:
+Input: nums = [3,3], target = 6
+Expected: [0,1]
+Your Output: [0,1]
+✅ PASSED
+
+🎉 All test cases passed!
+
+Runtime: ${Math.floor(Math.random() * 100) + 50}ms (Beats ${Math.floor(Math.random() * 30) + 70}% of ${langName} submissions)
+Memory: ${(Math.random() * 20 + 40).toFixed(1)}MB (Beats ${Math.floor(Math.random() * 30) + 60}% of ${langName} submissions)
+
+Time Complexity: O(n)
+Space Complexity: O(n)`)
       setIsRunning(false)
-    }, 1500)
+    }, 2000)
   }
 
   const copyCode = () => {
-    if (editorRef.current) {
-      navigator.clipboard.writeText(editorRef.current.value)
-    }
+    navigator.clipboard.writeText(code)
   }
 
-  // Handle tab key in editor
-  useEffect(() => {
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key === "Tab" && document.activeElement === editorRef.current) {
-        e.preventDefault()
-        const start = editorRef.current!.selectionStart
-        const end = editorRef.current!.selectionEnd
-        const value = editorRef.current!.value
-
-        editorRef.current!.value = value.substring(0, start) + "  " + value.substring(end)
-        editorRef.current!.selectionStart = editorRef.current!.selectionEnd = start + 2
-      }
-    }
-
-    document.addEventListener("keydown", handleTabKey)
-    return () => document.removeEventListener("keydown", handleTabKey)
-  }, [])
+  const closeOutput = () => {
+    setOutputVisible(false)
+  }
 
   if (!isOpen && !isEmbedded) return null
+
+  const renderContent = () => (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Question Section */}
+      <ResizablePanel
+        height={questionHeight}
+        onResize={setQuestionHeight}
+        minHeight={150}
+        className="border-b bg-muted/30"
+      >
+        <div className="p-4 h-full flex flex-col overflow-hidden">
+          <div className="flex items-center gap-2 mb-3">
+            <FileText className="w-4 h-4 text-teal-500" />
+            <h3 className="font-semibold">Problem Statement</h3>
+            <Badge
+              variant="outline"
+              className={cn(
+                "ml-2",
+                currentQuestion.difficulty === "Easy" && "bg-green-500/10 text-green-500 border-green-500/20",
+                currentQuestion.difficulty === "Medium" && "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+                currentQuestion.difficulty === "Hard" && "bg-red-500/10 text-red-500 border-red-500/20",
+              )}
+            >
+              {currentQuestion.difficulty}
+            </Badge>
+          </div>
+          <div className="flex-1 overflow-auto text-sm space-y-3">
+            <div>
+              <h4 className="font-medium text-base mb-2">{currentQuestion.title}</h4>
+              <p className="text-muted-foreground leading-relaxed">{currentQuestion.description}</p>
+            </div>
+            <div className="space-y-2">
+              {currentQuestion.examples.map((example, index) => (
+                <div key={index} className="bg-muted p-3 rounded-md border">
+                  <div className="font-medium text-xs text-teal-600 mb-1">Example {index + 1}:</div>
+                  <pre className="text-xs font-mono whitespace-pre-wrap text-foreground">
+                    {example}
+                  </pre>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </ResizablePanel>
+
+      {/* Code Editor Section - Only show when output is not visible */}
+      {!outputVisible && (
+        <ResizablePanel
+          height={editorHeight}
+          onResize={setEditorHeight}
+          minHeight={200}
+          className="border-b"
+        >
+          <div className="p-4 h-full flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Code className="w-4 h-4 text-teal-500" />
+                <h3 className="font-semibold">Code Editor</h3>
+                <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+                  <SelectTrigger className="w-32 h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(LANGUAGES).map(([key, lang]) => (
+                      <SelectItem key={key} value={key}>
+                        {lang.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Badge variant="outline" className={LANGUAGES[selectedLanguage].color}>
+                  {LANGUAGES[selectedLanguage].name}
+                </Badge>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" onClick={copyCode} className="h-8">
+                  <Copy className="w-3.5 h-3.5 mr-1" />
+                  Copy
+                </Button>
+                <Button
+                  onClick={runCode}
+                  disabled={isRunning}
+                  size="sm"
+                  className="bg-teal-500 hover:bg-teal-600 h-8 disabled:opacity-50"
+                >
+                  <Play className="w-3.5 h-3.5 mr-1" />
+                  {isRunning ? "Running..." : "Run Code"}
+                </Button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-hidden rounded border">
+              <Editor
+                height="100%"
+                language={LANGUAGES[selectedLanguage].monaco}
+                value={code}
+                onChange={(value) => setCode(value || '')}
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  lineNumbers: 'on',
+                  roundedSelection: false,
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  tabSize: 2,
+                  insertSpaces: true,
+                  wordWrap: 'on',
+                  lineHeight: 24,
+                  fontFamily: "'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace",
+                  fontLigatures: true,
+                }}
+              />
+            </div>
+          </div>
+        </ResizablePanel>
+      )}
+
+      {/* Output Section - Only show when output is visible */}
+      {outputVisible && (
+        <ResizablePanel
+          height={editorHeight}
+          onResize={setEditorHeight}
+          minHeight={200}
+          className="border-b"
+        >
+          <div className="p-4 h-full flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-teal-500" />
+                <h3 className="font-semibold">Output</h3>
+                {output && (
+                  <Badge variant="secondary">
+                    Results Available
+                  </Badge>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeOutput}
+                className="h-8 w-8 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="flex-1 bg-[#1e1e1e] text-white rounded border border-[#333] p-4 overflow-auto">
+              <pre className="text-sm whitespace-pre-wrap font-mono leading-relaxed">
+                {output || "Click 'Run Code' to see output here..."}
+              </pre>
+            </div>
+          </div>
+        </ResizablePanel>
+      )}
+    </div>
+  )
 
   // If embedded, render without modal wrapper
   if (isEmbedded) {
@@ -157,141 +435,12 @@ Memory: 42.1MB`)
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Question Section */}
-          <div ref={questionResizeRef} className="border-b bg-muted/30" style={{ height: questionHeight }}>
-            <div className="p-4 h-full flex flex-col">
-              <div className="flex items-center gap-2 mb-3">
-                <FileText className="w-4 h-4 text-teal-500" />
-                <h3 className="font-semibold">Problem Statement</h3>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "ml-2",
-                    currentQuestion.difficulty === "Easy" && "bg-green-500/10 text-green-500 border-green-500/20",
-                    currentQuestion.difficulty === "Medium" && "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-                    currentQuestion.difficulty === "Hard" && "bg-red-500/10 text-red-500 border-red-500/20",
-                  )}
-                >
-                  {currentQuestion.difficulty}
-                </Badge>
-              </div>
-              <div className="flex-1 overflow-auto text-sm">
-                <h4 className="font-medium mb-2">{currentQuestion.title}</h4>
-                <p className="text-muted-foreground mb-3">{currentQuestion.description}</p>
-                {currentQuestion.examples.map((example, index) => (
-                  <div key={index} className="bg-muted p-3 rounded text-xs mb-2">
-                    <strong>Example {index + 1}:</strong>
-                    <br />
-                    {example.split("\n").map((line, i) => (
-                      <React.Fragment key={i}>
-                        {line}
-                        <br />
-                      </React.Fragment>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div
-              className="h-1 bg-border hover:bg-teal-500/50 cursor-row-resize"
-              onMouseDown={handleResize(questionResizeRef, setQuestionHeight)}
-            />
-          </div>
-
-          {/* Code Editor Section */}
-          <div ref={editorResizeRef} className="border-b" style={{ height: editorHeight }}>
-            <div className="p-4 h-full flex flex-col">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Code className="w-4 h-4 text-teal-500" />
-                  <h3 className="font-semibold">Code Editor</h3>
-                  <Badge variant="outline">JavaScript</Badge>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={copyCode} className="h-8">
-                    <Copy className="w-3.5 h-3.5 mr-1" />
-                    Copy
-                  </Button>
-                  <Button
-                    onClick={runCode}
-                    disabled={isRunning}
-                    size="sm"
-                    className="bg-teal-500 hover:bg-teal-600 h-8"
-                  >
-                    <Play className="w-3.5 h-3.5 mr-1" />
-                    {isRunning ? "Running..." : "Run Code"}
-                  </Button>
-                </div>
-              </div>
-              <div className="flex-1 relative rounded border overflow-hidden">
-                <div className="absolute inset-0 bg-[#1e1e1e] text-white font-mono p-0">
-                  <div className="flex h-full">
-                    {/* Line numbers */}
-                    <div className="py-2 px-2 text-right select-none bg-[#252526] text-[#858585] min-w-[40px]">
-                      {code.split("\n").map((_, i) => (
-                        <div key={i} className="leading-6 text-xs">
-                          {i + 1}
-                        </div>
-                      ))}
-                    </div>
-                    {/* Editor */}
-                    <textarea
-                      ref={editorRef}
-                      value={code}
-                      onChange={(e) => setCode(e.target.value)}
-                      className="flex-1 bg-transparent resize-none outline-none p-2 leading-6 text-sm font-mono"
-                      spellCheck="false"
-                      placeholder="Write your code here..."
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              className="h-1 bg-border hover:bg-teal-500/50 cursor-row-resize"
-              onMouseDown={handleResize(editorResizeRef, setEditorHeight)}
-            />
-          </div>
-
-          {/* Output Section */}
-          <div className="flex-1 min-h-0">
-            <div className="p-4 h-full flex flex-col">
-              <Button
-                variant="ghost"
-                onClick={() => setOutputVisible(!outputVisible)}
-                className="flex items-center gap-2 mb-3 justify-start p-0 h-auto"
-              >
-                {outputVisible ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                <Terminal className="w-4 h-4 text-teal-500" />
-                <h3 className="font-semibold">Output</h3>
-                {output && (
-                  <Badge variant="secondary" className="ml-2">
-                    Results Available
-                  </Badge>
-                )}
-              </Button>
-
-              {outputVisible && (
-                <div
-                  ref={outputResizeRef}
-                  className="flex-1 bg-[#1e1e1e] text-white rounded border border-[#333] p-3 overflow-auto"
-                  style={{ minHeight: outputHeight }}
-                >
-                  <pre className="text-sm whitespace-pre-wrap font-mono">
-                    {output || "Click 'Run Code' to see output here..."}
-                  </pre>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        {renderContent()}
       </div>
     )
   }
 
-  // Original modal version (kept for backward compatibility)
+  // Modal version
   return (
     <div
       className={cn(
@@ -348,139 +497,7 @@ Memory: 42.1MB`)
           </div>
         </div>
 
-        {/* Main Content - Same as embedded version */}
-        <div className="flex flex-1 overflow-hidden">
-          <div className="flex-1 flex flex-col border-r">
-            {/* Question Section */}
-            <div ref={questionResizeRef} className="border-b bg-muted/30" style={{ height: questionHeight }}>
-              <div className="p-4 h-full flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
-                  <FileText className="w-4 h-4 text-teal-500" />
-                  <h3 className="font-semibold">Problem Statement</h3>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "ml-2",
-                      currentQuestion.difficulty === "Easy" && "bg-green-500/10 text-green-500 border-green-500/20",
-                      currentQuestion.difficulty === "Medium" &&
-                        "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-                      currentQuestion.difficulty === "Hard" && "bg-red-500/10 text-red-500 border-red-500/20",
-                    )}
-                  >
-                    {currentQuestion.difficulty}
-                  </Badge>
-                </div>
-                <div className="flex-1 overflow-auto text-sm">
-                  <h4 className="font-medium mb-2">{currentQuestion.title}</h4>
-                  <p className="text-muted-foreground mb-3">{currentQuestion.description}</p>
-                  {currentQuestion.examples.map((example, index) => (
-                    <div key={index} className="bg-muted p-3 rounded text-xs mb-2">
-                      <strong>Example {index + 1}:</strong>
-                      <br />
-                      {example.split("\n").map((line, i) => (
-                        <React.Fragment key={i}>
-                          {line}
-                          <br />
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div
-                className="h-1 bg-border hover:bg-teal-500/50 cursor-row-resize"
-                onMouseDown={handleResize(questionResizeRef, setQuestionHeight)}
-              />
-            </div>
-
-            {/* Code Editor Section */}
-            <div ref={editorResizeRef} className="border-b" style={{ height: editorHeight }}>
-              <div className="p-4 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Code className="w-4 h-4 text-teal-500" />
-                    <h3 className="font-semibold">Code Editor</h3>
-                    <Badge variant="outline">JavaScript</Badge>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={copyCode} className="h-8">
-                      <Copy className="w-3.5 h-3.5 mr-1" />
-                      Copy
-                    </Button>
-                    <Button
-                      onClick={runCode}
-                      disabled={isRunning}
-                      size="sm"
-                      className="bg-teal-500 hover:bg-teal-600 h-8"
-                    >
-                      <Play className="w-3.5 h-3.5 mr-1" />
-                      {isRunning ? "Running..." : "Run Code"}
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex-1 relative rounded border overflow-hidden">
-                  <div className="absolute inset-0 bg-[#1e1e1e] text-white font-mono p-0">
-                    <div className="flex h-full">
-                      {/* Line numbers */}
-                      <div className="py-2 px-2 text-right select-none bg-[#252526] text-[#858585] min-w-[40px]">
-                        {code.split("\n").map((_, i) => (
-                          <div key={i} className="leading-6 text-xs">
-                            {i + 1}
-                          </div>
-                        ))}
-                      </div>
-                      {/* Editor */}
-                      <textarea
-                        ref={editorRef}
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        className="flex-1 bg-transparent resize-none outline-none p-2 leading-6 text-sm font-mono"
-                        spellCheck="false"
-                        placeholder="Write your code here..."
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                className="h-1 bg-border hover:bg-teal-500/50 cursor-row-resize"
-                onMouseDown={handleResize(editorResizeRef, setEditorHeight)}
-              />
-            </div>
-
-            {/* Output Section */}
-            <div className="flex-1 min-h-0">
-              <div className="p-4 h-full flex flex-col">
-                <Button
-                  variant="ghost"
-                  onClick={() => setOutputVisible(!outputVisible)}
-                  className="flex items-center gap-2 mb-3 justify-start p-0 h-auto"
-                >
-                  {outputVisible ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                  <Terminal className="w-4 h-4 text-teal-500" />
-                  <h3 className="font-semibold">Output</h3>
-                  {output && (
-                    <Badge variant="secondary" className="ml-2">
-                      Results Available
-                    </Badge>
-                  )}
-                </Button>
-
-                {outputVisible && (
-                  <div
-                    ref={outputResizeRef}
-                    className="flex-1 bg-[#1e1e1e] text-white rounded border border-[#333] p-3 overflow-auto"
-                    style={{ minHeight: outputHeight }}
-                  >
-                    <pre className="text-sm whitespace-pre-wrap font-mono">
-                      {output || "Click 'Run Code' to see output here..."}
-                    </pre>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        {renderContent()}
       </div>
     </div>
   )
