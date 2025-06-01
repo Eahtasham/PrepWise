@@ -119,10 +119,10 @@ public:
 }
 
 // Resizable Panel Component
-const ResizablePanel = ({ 
-  children, 
-  height, 
-  onResize, 
+const ResizablePanel = ({
+  children,
+  height,
+  onResize,
   minHeight = 100,
   showHandle = true,
   className = ""
@@ -139,7 +139,7 @@ const ResizablePanel = ({
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     setIsResizing(true)
-    
+
     const startY = e.clientY
     const startHeight = height
 
@@ -162,7 +162,7 @@ const ResizablePanel = ({
     <div className={className} style={{ height }}>
       {children}
       {showHandle && (
-        <div 
+        <div
           className={cn(
             "h-2 bg-border hover:bg-teal-500/50 cursor-row-resize flex items-center justify-center transition-colors group",
             isResizing && "bg-teal-500"
@@ -362,6 +362,10 @@ Space Complexity: O(n)`)
                   lineHeight: 24,
                   fontFamily: "'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace",
                   fontLigatures: true,
+                  suggestOnTriggerCharacters: false,
+                  quickSuggestions: false,
+                  parameterHints: { enabled: false },
+                  wordBasedSuggestions: "off"
                 }}
               />
             </div>
