@@ -48,6 +48,7 @@ const page = async ({params}:RouteParams) => {
         interviewId={id}
         type="interview"
         questions={interview.questions}
+        codingQuestion = {interview.codingQuestion}
         feedbackId={feedback?.id}
       />
     </>

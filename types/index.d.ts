@@ -18,6 +18,12 @@ interface Interview {
   role: string;
   level: string;
   questions: string[];
+  codingQuestion?: {
+    title: string;
+    difficulty: string;
+    description: string;
+    examples: string[];
+  }
   techstack: string[];
   createdAt: string;
   coverImage: string,
@@ -31,6 +37,8 @@ interface CreateFeedbackParams {
   userId: string;
   transcript: { role: string; content: string }[];
   feedbackId?: string;
+  codeData?: any;
+
 }
 
 interface User {
@@ -62,6 +70,12 @@ interface AgentProps {
   feedbackId?: string;
   type: "generate" | "interview";
   questions?: string[];
+  codingQuestion?: {
+    title: string;
+    difficulty: string;
+    description: string;
+    examples: string[];
+  }
 }
 
 interface RouteParams {

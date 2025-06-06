@@ -9,7 +9,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState, useRef } from "react"
 import Webcam from "react-webcam"
-import CodeEditor from "./custom/code-editor"
+import CodeEditor, { executeCode, LANGUAGES } from "./custom/code-editor"
 
 
 enum CallStatus {
@@ -25,7 +25,14 @@ interface SavedMessage {
     content: string;
 }
 
-const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: AgentProps) => {
+export interface CodeQuestion {
+    title: string;
+    difficulty: string;
+    description: string;
+    examples: string[];
+}
+
+const Agent = ({ userName, userId, type, interviewId, feedbackId, questions, codingQuestion }: AgentProps) => {
     const router = useRouter()
     const [isSpeaking, setIsSpeaking] = useState(false)
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE)
@@ -34,6 +41,16 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
     const [isLoading, setIsLoading] = useState(false)
     const webcamRef = useRef<Webcam>(null)
     const [isCodeEditorOpen, setIsCodeEditorOpen] = useState(false)
+    const [codeEditorContent, setCodeEditorContent] = useState<{
+        language: keyof typeof LANGUAGES;
+        code: string;
+        output?: string;
+    }>({
+        language: 'javascript',
+        code: LANGUAGES.javascript.template,
+        output: ''
+    });
+
 
     useEffect(() => {
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE)
@@ -67,7 +84,12 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
         }
     }, [])
 
-    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+    const handleGenerateFeedback = async (messages: SavedMessage[], codeData?: {
+        language: keyof typeof LANGUAGES;
+        codingQuestion: CodeQuestion;
+        code: string;
+        output: string;
+    }) => {
         console.log("Generating feedback...")
         setIsLoading(true)
 
@@ -76,6 +98,7 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
             userId: userId!,
             transcript: messages,
             feedbackId,
+            codeData,
         })
         if (success && id) {
             router.push(`/interview/${interviewId}/feedback`)
@@ -83,6 +106,31 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
             console.log("Error generating feedback")
             setIsLoading(false)
             router.push("/dashboard")
+        }
+    }
+    // Update the executeAndGenerateFeedback function
+    const executeAndGenerateFeedback = async () => {
+        if (codeEditorContent.code) {
+            try {
+                console.log("Executing code...")
+                const output = await executeCode(codeEditorContent.language, codeEditorContent.code);
+                await handleGenerateFeedback(messages, {
+                    language: codeEditorContent.language,
+                    codingQuestion: codingQuestion || dummyCodeQuestion,
+                    code: codeEditorContent.code,
+                    output
+                });
+            } catch (error) {
+                console.error("Error executing code:", error);
+                await handleGenerateFeedback(messages, {
+                    language: codeEditorContent.language,
+                    codingQuestion: codingQuestion || dummyCodeQuestion,
+                    code: codeEditorContent.code,
+                    output: "Failed to execute code"
+                });
+            }
+        } else {
+            await handleGenerateFeedback(messages);
         }
     }
 
@@ -95,7 +143,7 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
             if (type === "generate") {
                 router.push("/dashboard")
             } else {
-                handleGenerateFeedback(messages)
+                executeAndGenerateFeedback()
             }
         }
     }, [messages, callStatus, type, userId])
@@ -119,6 +167,7 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
             await vapi.start(interviewer, {
                 variableValues: {
                     questions: formattedQuestions,
+                    codingQuestion: codingQuestion?.description,
                 },
             })
         }
@@ -188,7 +237,7 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
                                     </button>
                                 )}
                             </div>
-                            
+
                             {/* Control Buttons */}
                             <div className="flex gap-2">
                                 {/* Code Editor Toggle Button */}
@@ -385,10 +434,21 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions }: A
                     <div className="w-2/3 h-full transition-all duration-500 ease-in-out transform translate-x-0">
                         <div className="h-full bg-background rounded-lg border shadow-lg overflow-hidden">
                             <CodeEditor
-                                isOpen={true}
+                                isOpen={isCodeEditorOpen}
                                 onClose={() => setIsCodeEditorOpen(false)}
-                                question={dummyCodeQuestion}
                                 isEmbedded={true}
+                                question={codingQuestion || dummyCodeQuestion}
+                                onCodeChange={(language, code, output) => {
+                                    setCodeEditorContent(prev => ({
+                                        ...prev,
+                                        language,
+                                        code,
+                                        output: output || prev.output
+                                    }));
+                                }}
+                                initialLanguage={codeEditorContent.language}
+                                initialCode={codeEditorContent.code}
+                                initialOutput={codeEditorContent.output}
                             />
                         </div>
                     </div>

@@ -137,6 +137,10 @@ Use official yet friendly language.
 Keep responses concise and to the point (like in a real voice interview).
 Avoid robotic phrasing—sound natural and conversational.
 Answer the candidate’s questions professionally:
+Tell to open code editor if the candidate chosen the technical interview.
+Explain {{codingQuestion}} if the candidate asks about the coding task.
+If the candidate asks about the coding task, explain that they will be given a coding question to solve.
+Tell him to say approach and ask follow-up questions
 
 If asked about the role, company, or expectations, provide a clear and relevant answer.
 If unsure, redirect the candidate to HR for more details.
@@ -184,6 +188,10 @@ export const feedbackSchema = z.object({
       comment: z.string(),
     }),
   ]),
+  codeEvaluation: z.object({
+    score: z.number(),
+    comment: z.string(),
+  }).optional(),
   strengths: z.array(z.string()),
   areasForImprovement: z.array(z.string()),
   finalAssessment: z.string(),
@@ -214,7 +222,7 @@ export const dummyInterviews: Interview[] = [
     level: "Junior",
     questions: ["What is React?"],
     finalized: false,
-    coverImage:"/",
+    coverImage: "/",
     createdAt: "2024-03-15T10:00:00Z",
   },
   {
