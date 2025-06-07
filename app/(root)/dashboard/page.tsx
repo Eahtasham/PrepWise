@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/actions/auth.action"
-import { getInterviewsByUserId, getLatestInterviews } from "@/lib/actions/general.action"
+import { getFeedbackByUserId, getInterviewsByUserId, getLatestInterviews } from "@/lib/actions/general.action"
 import DashboardContent from "@/components/custom/dashboard-content"
 import { redirect } from "next/navigation"
 
@@ -10,12 +10,13 @@ export default async function DashboardPage() {
     redirect("/login")
   }
 
-  const [userInterviews, latestInterviews] = await Promise.all([
+  const [userInterviews, latestInterviews, feedbacks] = await Promise.all([
     getInterviewsByUserId(user?.id!),
     getLatestInterviews({ userId: user?.id! }),
+     getFeedbackByUserId({ userId: user.id })
   ])
 
-  return <DashboardContent user={user} userInterviews={userInterviews} latestInterviews={latestInterviews} />
+  return <DashboardContent user={user} userInterviews={userInterviews} latestInterviews={latestInterviews} feedbacks={feedbacks} />
 }
 
 // import Link from "next/link";
