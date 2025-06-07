@@ -51,6 +51,18 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions, cod
         output: ''
     });
 
+  useEffect(() => {
+    messages.forEach((message) => {
+      // Listen for transcript messages
+      if (message.role === 'assistant' && typeof message.content === 'string') {
+        // Check for coding section trigger
+        if (message.content.includes('coding section start') || message.content.includes('coding section')) {
+          setIsCodeEditorOpen(true);
+        }
+      }
+    });
+  }, [messages]);
+
 
     useEffect(() => {
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE)
