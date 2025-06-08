@@ -27,9 +27,6 @@ export function AllInterviews({ user, interviews }: AllInterviewsProps) {
           <p className="text-gray-400 mt-1">View and manage all your interview practice sessions</p>
         </div>
         <div className="mt-4 md:mt-0 flex gap-2">
-          <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800">
-            <Download className="mr-2 h-4 w-4" /> Export Results
-          </Button>
           <ScheduleInterviewModal user={user} />
         </div>
       </div>

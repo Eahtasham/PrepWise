@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { CalendarDays, FileText, Mic, ArrowLeft, Loader2 } from "lucide-react"
+import { CalendarDays, FileText, Mic, ArrowLeft, Loader2, Sparkles } from "lucide-react"
 
 // This is a standalone version of the interview modal that doesn't rely on context
 export function ScheduleInterviewModal({user}: {user: any}) {
@@ -21,12 +21,6 @@ export function ScheduleInterviewModal({user}: {user: any}) {
     const router = useRouter()
     
 
-    // Mock user data
-    const mockUser = {
-        id: "mock-user-123",
-        name: "Mock User",
-        email: "mock@example.com",
-    }
 
     // Form state
     const [formData, setFormData] = useState({
@@ -109,7 +103,8 @@ export function ScheduleInterviewModal({user}: {user: any}) {
 
     return (
         <>
-            <Button onClick={() => setIsOpen(true)} className="bg-teal-500 hover:bg-teal-600 text-white">
+            <Button onClick={() => setIsOpen(true)} className="bg-teal-500 hover:bg-teal-600 text-white shadow-lg transition-all duration-200 hover:shadow-xl">
+                <Sparkles className="h-4 w-4 mr-2" />
                 Schedule Interview
             </Button>
 
@@ -123,10 +118,20 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                     }
                 }}
             >
-                <DialogContent className="sm:max-w-[600px] bg-stone-950  border-teal-800 text-white">
+                <DialogContent className="sm:max-w-[600px] bg-stone-950 border-teal-800 text-white shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-semibold text-white">
-                            {currentStep === "options" ? "Create New Interview" : "Manual Interview Setup"}
+                        <DialogTitle className="text-xl font-semibold text-white flex items-center gap-2">
+                            {currentStep === "options" ? (
+                                <>
+                                    <Sparkles className="h-5 w-5 text-teal-400" />
+                                    Create New Interview
+                                </>
+                            ) : (
+                                <>
+                                    <FileText className="h-5 w-5 text-teal-400" />
+                                    Manual Interview Setup
+                                </>
+                            )}
                         </DialogTitle>
                     </DialogHeader>
 
@@ -135,23 +140,23 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                             <div className="grid gap-4">
                                 {/* Manual Form Filling - Available */}
                                 <Card
-                                    className="bg-stone-950 dark-gradient border-teal-800 hover:bg-gray-750 transition-colors cursor-pointer"
+                                    className="bg-stone-900/50 border-teal-800/50 hover:border-teal-700 hover:bg-stone-900/80 transition-all duration-200 cursor-pointer group"
                                     onClick={() => setCurrentStep("manual-form")}
                                 >
                                     <CardHeader className="pb-3">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
-                                                <div className="p-2 bg-teal-900 rounded-lg">
+                                                <div className="p-2 bg-teal-900/50 group-hover:bg-teal-800/50 rounded-lg transition-colors">
                                                     <FileText className="h-5 w-5 text-teal-400" />
                                                 </div>
                                                 <div>
-                                                    <CardTitle className="text-white">Manual Form Filling</CardTitle>
+                                                    <CardTitle className="text-white group-hover:text-teal-50">Manual Form Filling</CardTitle>
                                                     <CardDescription className="text-gray-400">
                                                         Create interview by filling out a detailed form
                                                     </CardDescription>
                                                 </div>
                                             </div>
-                                            <Badge className="bg-teal-900 text-teal-400 hover:bg-teal-900">Available</Badge>
+                                            <Badge className="bg-teal-900/50 text-teal-300 hover:bg-teal-900/50 border border-teal-700">Available</Badge>
                                         </div>
                                     </CardHeader>
                                     <CardContent>
@@ -162,11 +167,11 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                 </Card>
 
                                 {/* Resume Parsed - Coming Soon */}
-                                <Card className="bg-stone-950 dark-gradient border-teal-800 opacity-60 cursor-not-allowed">
+                                <Card className="bg-stone-900/30 border-gray-700/50 opacity-60 cursor-not-allowed">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
-                                                <div className="p-2 bg-gray-700 rounded-lg">
+                                                <div className="p-2 bg-gray-800/50 rounded-lg">
                                                     <CalendarDays className="h-5 w-5 text-gray-500" />
                                                 </div>
                                                 <div>
@@ -176,7 +181,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                                     </CardDescription>
                                                 </div>
                                             </div>
-                                            <Badge variant="secondary" className="bg-gray-700 text-gray-400">
+                                            <Badge variant="secondary" className="bg-gray-800/50 text-gray-400 border border-gray-600">
                                                 Coming Soon
                                             </Badge>
                                         </div>
@@ -189,11 +194,11 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                 </Card>
 
                                 {/* Voice Interacted - Coming Soon */}
-                                <Card className="bg-stone-950 dark-gradient border-teal-800 opacity-60 cursor-not-allowed">
+                                <Card className="bg-stone-900/30 border-gray-700/50 opacity-60 cursor-not-allowed">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
-                                                <div className="p-2 bg-gray-700 rounded-lg">
+                                                <div className="p-2 bg-gray-800/50 rounded-lg">
                                                     <Mic className="h-5 w-5 text-gray-500" />
                                                 </div>
                                                 <div>
@@ -203,7 +208,7 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                                     </CardDescription>
                                                 </div>
                                             </div>
-                                            <Badge variant="secondary" className="bg-gray-700 text-gray-400">
+                                            <Badge variant="secondary" className="bg-gray-800/50 text-gray-400 border border-gray-600">
                                                 Coming Soon
                                             </Badge>
                                         </div>
@@ -219,96 +224,99 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                     )}
 
                     {currentStep === "manual-form" && (
-                        <div className="space-y-6 py-4 ">
+                        <div className="space-y-6 py-4">
                             <div className="flex items-center space-x-2 mb-4">
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setCurrentStep("options")}
-                                    className="text-gray-400 hover:text-white hover:bg-gray-800"
+                                    className="text-gray-400 hover:text-teal-300 hover:bg-stone-800/50 transition-colors"
                                 >
                                     <ArrowLeft className="h-4 w-4 mr-1" />
                                     Back
                                 </Button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     {/* Interview Type */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="type" className="text-gray-300">
-                                            Interview Type *
+                                        <Label htmlFor="type" className="text-gray-200 font-medium">
+                                            Interview Type <span className="text-teal-400">*</span>
                                         </Label>
                                         <Select value={formData.type} onValueChange={(value) => handleInputChange("type", value)}>
-                                            <SelectTrigger className="bg-gray-800 border-gray-700 text-white focus:ring-teal-500">
-                                                <SelectValue placeholder="Select interview type" />
+                                            <SelectTrigger className="bg-stone-800/50 border-gray-600 text-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 h-11">
+                                                <SelectValue placeholder="Choose interview type" className="text-gray-500" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                                                <SelectItem value="technical">Technical</SelectItem>
-                                                <SelectItem value="behavioral">Behavioral</SelectItem>
-                                                <SelectItem value="mixed">Mixed</SelectItem>
+                                            <SelectContent className="bg-stone-800 border-gray-600 text-white">
+                                                <SelectItem value="technical" className="focus:bg-teal-900/50">Technical</SelectItem>
+                                                <SelectItem value="behavioral" className="focus:bg-teal-900/50">Behavioral</SelectItem>
+                                                <SelectItem value="hr" className="focus:bg-teal-900/50">HR</SelectItem>
+                                                <SelectItem value="managerial" className="focus:bg-teal-900/50">Managerial</SelectItem>
+                                                <SelectItem value="mixed" className="focus:bg-teal-900/50">Mixed</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     {/* Role */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="role" className="text-gray-300">
-                                            Role *
+                                        <Label htmlFor="role" className="text-gray-200 font-medium">
+                                            Role <span className="text-teal-400">*</span>
                                         </Label>
                                         <Input
                                             id="role"
                                             value={formData.role}
                                             onChange={(e) => handleInputChange("role", e.target.value)}
-                                            placeholder="e.g., Frontend Developer"
-                                            className="bg-gray-800 border-gray-700 text-white focus-visible:ring-teal-500"
+                                            placeholder="Frontend Developer, SDE, Data Scientist"
+                                            className="bg-stone-800/50 border-gray-600 text-gray-200 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:border-teal-500 h-11"
                                             required
                                         />
                                     </div>
 
                                     {/* Experience Level */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="level" className="text-gray-300">
-                                            Experience Level *
+                                        <Label htmlFor="level" className="text-gray-200 font-medium">
+                                            Experience Level <span className="text-teal-400">*</span>
                                         </Label>
                                         <Select value={formData.level} onValueChange={(value) => handleInputChange("level", value)}>
-                                            <SelectTrigger className="bg-gray-800 border-gray-700 text-white focus:ring-teal-500">
-                                                <SelectValue placeholder="Select experience level" />
+                                            <SelectTrigger className="bg-stone-800/50 border-gray-600 text-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 h-11">
+                                                <SelectValue placeholder="Select your experience level" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                                                <SelectItem value="entry">Entry Level (0-2 years)</SelectItem>
-                                                <SelectItem value="mid">Mid Level (2-5 years)</SelectItem>
-                                                <SelectItem value="senior">Senior Level (5+ years)</SelectItem>
+                                            <SelectContent className="bg-stone-800 border-gray-600 text-white">
+                                                <SelectItem value="internship" className="focus:bg-teal-900/50">Internship</SelectItem>
+                                                <SelectItem value="entry" className="focus:bg-teal-900/50">Entry Level (0-2 years)</SelectItem>
+                                                <SelectItem value="mid" className="focus:bg-teal-900/50">Mid Level (2-5 years)</SelectItem>
+                                                <SelectItem value="senior" className="focus:bg-teal-900/50">Senior Level (5+ years)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     {/* Company */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="company" className="text-gray-300">
+                                        <Label htmlFor="company" className="text-gray-200 font-medium">
                                             Company
                                         </Label>
                                         <Input
                                             id="company"
                                             value={formData.company}
                                             onChange={(e) => handleInputChange("company", e.target.value)}
-                                            placeholder="e.g., Google, Microsoft"
-                                            className="bg-gray-800 border-gray-700 text-white focus-visible:ring-teal-500"
+                                            placeholder="TCS, Wipro, Infosys (optional)"
+                                            className="bg-stone-800/50 border-gray-600 text-gray-200 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:border-teal-500 h-11"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Tech Stack */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="techstack" className="text-gray-300">
-                                        Tech Stack *
+                                    <Label htmlFor="techstack" className="text-gray-200 font-medium">
+                                        Tech Stack <span className="text-teal-400">*</span>
                                     </Label>
                                     <Input
                                         id="techstack"
                                         value={formData.techstack}
                                         onChange={(e) => handleInputChange("techstack", e.target.value)}
-                                        placeholder="e.g., React, Node.js, TypeScript (comma separated)"
-                                        className="bg-gray-800 border-gray-700 text-white focus-visible:ring-teal-500"
+                                        placeholder="React, Node.js, TypeScript, Python"
+                                        className="bg-stone-800/50 border-gray-600 text-gray-200 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:border-teal-500 h-11"
                                         required
                                     />
                                     <p className="text-xs text-gray-400">Enter technologies separated by commas</p>
@@ -316,36 +324,37 @@ export function ScheduleInterviewModal({user}: {user: any}) {
 
                                 {/* Number of Questions */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="amount" className="text-gray-300">
+                                    <Label htmlFor="amount" className="text-gray-200 font-medium">
                                         Number of Questions
                                     </Label>
                                     <Select value={formData.amount} onValueChange={(value) => handleInputChange("amount", value)}>
-                                        <SelectTrigger className="bg-gray-800 border-gray-700 text-white focus:ring-teal-500">
-                                            <SelectValue placeholder="Select number of questions" />
+                                        <SelectTrigger className="bg-stone-800/50 border-gray-600 text-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 h-11">
+                                            <SelectValue placeholder="Choose number of questions (default: 5)" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                                            <SelectItem value="3">3 Questions</SelectItem>
-                                            <SelectItem value="5">5 Questions</SelectItem>
-                                            <SelectItem value="10">10 Questions</SelectItem>
-                                            <SelectItem value="15">15 Questions</SelectItem>
+                                        <SelectContent className="bg-stone-800 border-gray-600 text-white">
+                                            <SelectItem value="1" className="focus:bg-teal-900/50">1 Question</SelectItem>
+                                            <SelectItem value="3" className="focus:bg-teal-900/50">3 Questions</SelectItem>
+                                            <SelectItem value="5" className="focus:bg-teal-900/50">5 Questions</SelectItem>
+                                            <SelectItem value="10" className="focus:bg-teal-900/50">10 Questions</SelectItem>
+                                            <SelectItem value="15" className="focus:bg-teal-900/50">15 Questions</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 {/* Submit Button */}
-                                <div className="flex justify-end space-x-3 pt-4">
+                                <div className="flex justify-end space-x-3 pt-6">
                                     <Button
                                         type="button"
                                         variant="outline"
                                         onClick={() => setCurrentStep("options")}
-                                        className="border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800"
+                                        className="border-gray-600 text-gray-300 hover:text-white hover:bg-stone-800/50 hover:border-gray-500 transition-colors"
                                     >
                                         Cancel
                                     </Button>
                                     <Button
                                         type="submit"
                                         disabled={isLoading || !formData.type || !formData.role || !formData.level || !formData.techstack}
-                                        className="bg-teal-500 hover:bg-teal-600 text-white"
+                                        className="bg-teal-500 hover:bg-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px]"
                                     >
                                         {isLoading ? (
                                             <>
@@ -353,7 +362,10 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                                                 Creating...
                                             </>
                                         ) : (
-                                            "Create Interview"
+                                            <>
+                                                <Sparkles className="mr-2 h-4 w-4" />
+                                                Create Interview
+                                            </>
                                         )}
                                     </Button>
                                 </div>

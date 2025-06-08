@@ -79,8 +79,8 @@ export default function Home() {
         },
         {
             name: "Premium",
-            price: "$19",
-            period: "per month",
+            price: "$0",
+            period: "limited time",
             description: "For serious job seekers",
             features: [
                 "All Free features",
