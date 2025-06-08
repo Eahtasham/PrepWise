@@ -353,7 +353,7 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions, cod
                                 {!isCodeEditorOpen && (
                                     <div className="absolute bottom-2 right-2 flex gap-2">
                                         {/* Code Editor Toggle Button */}
-                                        <TooltipProvider>
+                                        { codingQuestion && <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <button
@@ -370,7 +370,7 @@ const Agent = ({ userName, userId, type, interviewId, feedbackId, questions, cod
                                                     </p>
                                                 </TooltipContent>
                                             </Tooltip>
-                                        </TooltipProvider>
+                                        </TooltipProvider>}
 
                                         {/* Webcam Toggle Button */}
                                         <TooltipProvider>

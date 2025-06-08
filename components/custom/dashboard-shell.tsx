@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { signOut } from "@/lib/actions/auth.action"
+import { getCurrentUser, signOut } from "@/lib/actions/auth.action"
 import { ScheduleInterviewModal } from "./schedule-interview-modal"
 
 interface NavItem {
@@ -58,6 +58,7 @@ const navItems: NavItem[] = [
 
 export function DashboardShell({ children, user }: { children: React.ReactNode, user: any }) {
   const pathname = usePathname()
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
@@ -97,20 +98,19 @@ export function DashboardShell({ children, user }: { children: React.ReactNode, 
               ))}
             </nav>
           </div>
-          {/* <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
+          <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex-shrink-0 w-full group block">
                   <div className="flex items-center">
                     <div>
                       <Avatar>
-                        <AvatarImage src="/placeholder.svg" alt="User" />
-                        <AvatarFallback className="bg-teal-800 text-teal-100">JD</AvatarFallback>
+                        <AvatarFallback className="bg-teal-800 text-teal-100">{(user?.name[0]).toUpperCase()}</AvatarFallback>
                       </Avatar>
                     </div>
                     <div className="ml-3">
-                      <p className="text-sm font-medium text-white">John Doe</p>
-                      <p className="text-xs font-medium text-gray-400 group-hover:text-gray-300">View profile</p>
+                      <p className="text-sm font-medium text-white">{user?.name}</p>
+                      <p className="text-xs font-medium text-gray-400 group-hover:text-gray-300">View details</p>
                     </div>
                   </div>
                 </button>
@@ -118,19 +118,19 @@ export function DashboardShell({ children, user }: { children: React.ReactNode, 
               <DropdownMenuContent align="end" className="w-56 bg-stone-950 border-gray-800">
                 <DropdownMenuLabel className="text-gray-300">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-800" />
-                <DropdownMenuItem className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
+                {/* <DropdownMenuItem className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
                   <User className="mr-2 h-4 w-4" /> Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
                   <Settings className="mr-2 h-4 w-4" /> Settings
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuSeparator className="bg-gray-800" />
                 <DropdownMenuItem onClick={signOut} className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
                   <LogOut className="mr-2 h-4 w-4" /> Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div> */}
+          </div>
         </div>
       </div>
 
@@ -177,7 +177,7 @@ export function DashboardShell({ children, user }: { children: React.ReactNode, 
               ))}
             </nav>
           </div>
-          {/* <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
+          <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
             <button className="flex-shrink-0 w-full group block">
               <div className="flex items-center">
                 <div>
@@ -192,7 +192,7 @@ export function DashboardShell({ children, user }: { children: React.ReactNode, 
                 </div>
               </div>
             </button>
-          </div> */}
+          </div>
         </SheetContent>
 
         {/* Main Content */}

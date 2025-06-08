@@ -270,7 +270,7 @@ export async function POST(request: Request) {
         - Avoid special characters that might break voice assistant
         - Format regular questions like: ["Question 1", "Question 2"]
         
-        Plus one additional easy to lower medium DSA coding question only related to on arrays, strings, (add linked list, queues based on experience)  at the end (separate from the ${amount} questions).
+        Plus one additional moderatly easy to medium DSA coding question only related to on numberd arrays, character arrays, strings, (add linked list, queues based on experience)  at the end (separate from the ${amount} questions).
         The coding question should be in this exact JSON format:
         {
           "title": "Problem Title",
