@@ -353,9 +353,6 @@ const pieChartData = [
                     </svg>
                     <span>
                       There are no scheduled interviews available.{" "}
-                      <Link href="/interview">
-                        <button className="text-teal-500 hover:text-teal-400 hover:underline">Create one now</button>
-                      </Link>
                     </span>
                   </div>
                 )}
