@@ -70,7 +70,7 @@ export default function Home() {
     const plans = [
         {
             name: "Free",
-            price: "$0",
+            price: "₹0",
             period: "forever",
             description: "Perfect for beginners",
             features: ["Basic interview simulations", "Performance tracking", "Limited question bank", "Community support"],
@@ -79,15 +79,13 @@ export default function Home() {
         },
         {
             name: "Premium",
-            price: "$0",
+            price: "₹299",
             period: "limited time",
             description: "For serious job seekers",
             features: [
                 "All Free features",
-                "AI Speech & Sentiment Analysis",
-                "Code Editor",
-                "Customized Interview Scenarios",
-                "Mock Panel Interviews",
+                "15 interview credits",
+                "5 interview attempts",
                 "Priority support",
             ],
             buttonText: "Upgrade Now",
@@ -97,41 +95,42 @@ export default function Home() {
 
     const reviews = [
         {
-            name: "John Doe",
+            name: "Atif Amaan",
+            role: "Python Developer",
+            content: "I really liked how the platform gave instant feedback after each session. It helped me fix my mistakes quickly.",
+            avatar: "https://randomuser.me/api/portraits/men/11.jpg",
+            rating: 5,
+        },
+        {
+            name: "Parthib Mitra",
+            role: "CSE Final Year · Java Developer",
+            content: "The mock interviews felt very real. It gave me a lot of confidence before my placement interviews.",
+            avatar: "https://randomuser.me/api/portraits/men/12.jpg",
+            rating: 5,
+        },
+        {
+            name: "Anupam Rana",
+            role: "CSE Final Year · Java Developer",
+            content: "I used it daily before my interviews. The structured practice and questions were very helpful.",
+            avatar: "https://randomuser.me/api/portraits/men/13.jpg",
+            rating: 4,
+        },
+        {
+            name: "Tarifuddin",
+            role: "IT Final Year · Next.js Developer",
+            content: "Loved the frontend-focused interview questions. It covered real-world topics I actually faced later.",
+            avatar: "https://randomuser.me/api/portraits/men/14.jpg",
+            rating: 5,
+        },
+        {
+            name: "Aravindh",
             role: "Software Engineer",
-            content: "This platform helped me ace my technical interviews. The AI-driven feedback was incredibly helpful!",
-            avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-            rating: 5,
-        },
-        {
-            name: "Jane Smith",
-            role: "Product Manager",
-            content: "The interview simulations are so realistic. I felt much more confident in my actual interviews.",
-            avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+            content: "The analytics and progress tracking gave me a clear idea of what to improve. Super useful!",
+            avatar: "https://randomuser.me/api/portraits/men/15.jpg",
             rating: 4,
         },
-        {
-            name: "Mike Johnson",
-            role: "Data Scientist",
-            content: "The performance tracking feature helped me identify my weaknesses and improve rapidly.",
-            avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-            rating: 5,
-        },
-        {
-            name: "Emily Brown",
-            role: "UX Designer",
-            content: "I love how the platform adapts to my progress. It's like having a personal interview coach!",
-            avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-            rating: 5,
-        },
-        {
-            name: "Alex Lee",
-            role: "Marketing Specialist",
-            content: "The variety of interview scenarios is impressive. It really helped me prepare for different situations.",
-            avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-            rating: 4,
-        },
-    ]
+    ];
+
 
     const fadeIn = {
         hidden: { opacity: 0, y: 20 },
@@ -435,15 +434,15 @@ export default function Home() {
                         >
                             <div className="flex flex-col items-center text-center">
                                 <div className="relative mb-4 sm:mb-6">
-                                    <img
-                                        src={reviews[currentReview].avatar || "/placeholder.svg"}
-                                        alt={reviews[currentReview].name}
-                                        className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full border-2 sm:border-3 lg:border-4 border-teal-500"
-                                    />
-                                    <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-gradient-to-r from-teal-500 to-[#3A4750] rounded-full p-1 sm:p-2">
-                                        <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
+                                    <div className="relative mb-4 sm:mb-6">
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full border-2 sm:border-3 lg:border-4 border-teal-500 bg-teal-600 text-white flex items-center justify-center text-xl sm:text-2xl lg:text-3xl font-semibold">
+                                            {reviews[currentReview].name.charAt(0)}
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-gradient-to-r from-teal-500 to-[#3A4750] rounded-full p-1 sm:p-2">
+                                            <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
 

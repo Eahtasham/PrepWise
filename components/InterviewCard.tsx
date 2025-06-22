@@ -20,7 +20,6 @@ const InterviewCard = async ({
     createdAt,
 }: InterviewCardProps) => {
     const feedback = userId && id ? await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
-    console.log("Attempts Left:", attempts);
 
     const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
     const badgeColor =

@@ -55,12 +55,12 @@ ${user.name}`
               {user.isPro ? (
                 <>
                   <Crown className="h-5 w-5 text-yellow-500" />
-                  Pro Account
+                  You are a Pro User
                 </>
               ) : (
                 <>
                   <Star className="h-5 w-5 text-teal-500" />
-                  Free Account
+                  You are a Free User
                 </>
               )}
             </CardTitle>
@@ -89,7 +89,7 @@ ${user.name}`
               <div className="mt-4 p-3 rounded-lg bg-yellow-900/10 border border-yellow-500/20">
                 <div className="flex items-center gap-2 text-yellow-400">
                   <Crown className="h-4 w-4" />
-                  <span className="text-sm font-medium">Pro Benefits Active</span>
+                  <span className="text-sm font-medium">Your Pro Benefits Activated</span>
                 </div>
                 <ul className="mt-2 space-y-1 text-sm text-gray-300">
                   <li>• 15 Interview Credits</li>
