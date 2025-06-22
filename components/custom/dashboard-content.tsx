@@ -37,7 +37,7 @@ function calculatePerformanceData(feedbackData: Feedback[]): PerformanceMetrics 
   const totalScore = feedbackData.reduce((sum, feedback) => sum + feedback.totalScore, 0)
   const averageScore = Math.round(totalScore / feedbackData.length)
 
-const technicalScores = feedbackData
+  const technicalScores = feedbackData
     .map(f => {
       const categoryScore = f.categoryScores.find(cat => cat.name === "Technical Knowledge")
       return categoryScore ? categoryScore.score : 0
@@ -58,8 +58,8 @@ const technicalScores = feedbackData
     })
     .filter(score => score > 0)
 
-  const technicalSkills = technicalScores.length > 0 
-    ? Math.round(technicalScores.reduce((sum, score) => sum + score, 0) / technicalScores.length) 
+  const technicalSkills = technicalScores.length > 0
+    ? Math.round(technicalScores.reduce((sum, score) => sum + score, 0) / technicalScores.length)
     : 0
 
   const communication = communicationScores.length > 0
@@ -92,11 +92,11 @@ export default function DashboardContent({ user, userInterviews, latestInterview
 
 
   // Pie chart data for visualization
-const pieChartData = [
-  { name: 'Technical Skills', value: performanceData.technicalSkills, color: '#3B82F6' }, // Blue
-  { name: 'Communication', value: performanceData.communication, color: '#10B981' }, // Emerald
-  { name: 'Problem Solving', value: performanceData.problemSolving, color: '#F59E0B' } // Amber
-]
+  const pieChartData = [
+    { name: 'Technical Skills', value: performanceData.technicalSkills, color: '#3B82F6' }, // Blue
+    { name: 'Communication', value: performanceData.communication, color: '#10B981' }, // Emerald
+    { name: 'Problem Solving', value: performanceData.problemSolving, color: '#F59E0B' } // Amber
+  ]
 
   return (
     <div className="flex flex-col space-y-6">
@@ -105,7 +105,20 @@ const pieChartData = [
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
           <p className="text-gray-400 mt-1">Welcome back, <span className="text-teal-500 font-semibold">{user?.name || "User"}</span> . Track your interview progress.</p>
         </div>
-        <div className="mt-4 md:mt-0 flex flex-wrap gap-2">
+
+        {/* Credit need to show properly */}
+        <div className="mt-4 md:mt-0 flex flex-wrap items-center gap-4">
+          {/* Credits Card */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-gray-800/50 rounded-lg border border-teal-500/30">
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-5 rounded-full bg-teal-500 flex items-center justify-center">
+                <span className="text-xs font-bold text-white">C</span>
+              </div>
+              <span className="text-gray-300 text-sm font-medium">Credits:</span>
+              <span className="text-teal-400 font-bold text-lg">{user?.credits || 0}</span>
+            </div>
+          </div>
+
           <ScheduleInterviewModal user={user} />
         </div>
       </div>
@@ -216,20 +229,20 @@ const pieChartData = [
                       stroke="#374151"
                       strokeWidth="6"
                     />
-                    
+
                     {/* Dynamic pie chart segments */}
                     {(() => {
                       let cumulativePercentage = 0
                       const totalValue = pieChartData.reduce((sum, item) => sum + item.value, 0)
-                      
+
                       return pieChartData.map((data, index) => {
                         if (data.value === 0) return null
-                        
+
                         const percentage = data.value / totalValue
                         const strokeDasharray = `${percentage * 534.07} 534.07` // 2 * π * 85 ≈ 534.07
                         const strokeDashoffset = -cumulativePercentage * 534.07
                         cumulativePercentage += percentage
-                        
+
                         return (
                           <circle
                             key={index}
@@ -246,7 +259,7 @@ const pieChartData = [
                         )
                       })
                     })()}
-                    
+
                     {/* Center score */}
                     <text
                       x="100"
@@ -268,7 +281,7 @@ const pieChartData = [
                     </text>
                   </svg>
                 </div>
-                
+
                 {/* Legend */}
                 <div className="space-y-2">
                   {pieChartData.map((data, index) => (
@@ -335,6 +348,7 @@ const pieChartData = [
                       id={interview.id}
                       role={interview.role}
                       type={interview.type}
+                      attempts={interview.attempts}
                       finalized={interview.finalized}
                       coverImage={interview.coverImage}
                       techstack={interview.techstack}
@@ -379,6 +393,7 @@ const pieChartData = [
                         id={interview.id}
                         role={interview.role}
                         type={interview.type}
+                        attempts={interview.attempts}
                         finalized={interview.finalized}
                         techstack={interview.techstack}
                         coverImage={interview.coverImage}

@@ -44,6 +44,7 @@ export async function signUp(params: SignUpParams) {
             isVerified: false,
             isPro: false,
             provider: "email",
+            credits: 3, 
             createdAt: new Date().toISOString(),
             // profileURL,
             // resumeURL,
@@ -140,6 +141,7 @@ export async function oauthSignIn(params: OAuthSignInParams) {
                 email,
                 photoURL,
                 provider,
+                credits: 3, 
                 isVerified: true, // OAuth providers verify emails by default
                 isPro: false,
                 createdAt: new Date().toISOString(),
@@ -185,6 +187,15 @@ export async function getCurrentUser(): Promise<User | null> {
             .doc(decodedClaims.uid)
             .get();
         if (!userRecord.exists) return null;
+
+        const userData = userRecord.data();
+
+        if (userData && userData.credits === undefined) {
+            await db.collection("users").doc(decodedClaims.uid).update({
+                credits: 3
+            });
+            userData.credits = 3;
+        }
 
         return {
             ...userRecord.data(),

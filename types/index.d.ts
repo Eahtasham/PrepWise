@@ -47,6 +47,7 @@ interface User {
   isVerified: boolean;
   isPro: boolean;
   provider: string;
+  credits: number;
   photoURL?: string;
   createdAt: string;
   id: string;
@@ -58,6 +59,7 @@ interface InterviewCardProps {
   role: string;
   type: string;
   coverImage?: string;
+  attempts?: number;
   finalized: boolean;
   techstack: string[];
   createdAt?: string;

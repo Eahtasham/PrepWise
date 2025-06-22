@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { CalendarDays, FileText, Mic, ArrowLeft, Loader2, Sparkles } from "lucide-react"
+import { toast } from "sonner"
 
 // This is a standalone version of the interview modal that doesn't rely on context
 export function ScheduleInterviewModal({user}: {user: any}) {
@@ -59,6 +60,8 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                     amount: Number.parseInt(formData.amount) || 5, // Default to 5 questions if not specified
                 }),
             })
+            const data = await response.json();
+
 
             // Reset form and close modal
             if (response.ok) {
@@ -77,11 +80,10 @@ export function ScheduleInterviewModal({user}: {user: any}) {
                 // Optionally redirect to interviews page
                 router.push("/dashboard/scheduled")
             } else {
+                toast.error(data.error || "Failed to create interview")
                 console.error("Failed to create interview")
             }
 
-            // Optionally redirect
-            // router.push("/dashboard/scheduled")
         } catch (error) {
             console.error("Error creating interview:", error)
         } finally {
