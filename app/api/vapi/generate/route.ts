@@ -245,8 +245,29 @@ function getCompanyContext(companyName: string) {
 export async function POST(request: Request) {
   const { type, role, level, techstack, amount, userid, company } = await request.json();
   const companyContext = getCompanyContext(company);
-  
+
   try {
+    const userDoc = await db.collection("users").doc(userid).get();
+    if (!userDoc.exists) {
+      return Response.json({
+        success: false,
+        error: "User not found."
+      }, { status: 404 });
+    }
+
+    const userData = userDoc.data();
+    const currentCredits = userData?.credits ?? 0;
+
+    // Check if user has enough credits
+    if (currentCredits < 1) {
+      return Response.json({
+        success: false,
+        error: "Insufficient credits. Please purchase more credits to continue.",
+        creditsRequired: 1,
+        currentCredits: currentCredits
+      }, { status: 402 }); // 402 Payment Required
+    }
+
     // Base prompt for regular questions
     const basePrompt = `Prepare questions for a job interview.
       The context is: ${companyContext}
@@ -295,16 +316,16 @@ export async function POST(request: Request) {
 
     if (type.toLowerCase() === 'technical') {
       try {
-         console.log("Raw Questions Response:", questions);
+        console.log("Raw Questions Response:", questions);
         // Try to parse the response which should contain both regular questions and coding question
         // Split the response into parts
         const parts = questions.split('\n{');
         console.log("Split Parts:", parts);
-        
+
         // Parse regular questions (first part)
         questionsList = JSON.parse(parts[0].trim());
-         console.log("Parsed Regular Questions:", questionsList);
-        
+        console.log("Parsed Regular Questions:", questionsList);
+
         // Parse coding question (second part)
         if (parts.length > 1) {
           codingQuestion = JSON.parse(`{${parts[1].trim()}`);
@@ -326,7 +347,7 @@ export async function POST(request: Request) {
           description: `Implement a solution for a common ${techstack} problem`,
           examples: []
         };
-        
+
       }
     } else {
       questionsList = JSON.parse(questions);
@@ -337,18 +358,29 @@ export async function POST(request: Request) {
       type: type,
       level: level,
       techstack: techstack.split(","),
-      questions: questionsList, 
+      questions: questionsList,
       codingQuestion: codingQuestion || null,
       company: company,
       userId: userid,
+      attempts: 2,
       finalized: false,
       coverImage: getRandomInterviewCover(),
       createdAt: new Date().toISOString(),
     };
 
     await db.collection("interviews").add(interview);
+    await db.collection("users").doc(userid).update({
+      credits: currentCredits - 1,
+    });
 
-    return Response.json({ success: true }, { status: 200 });
+    
+
+    return Response.json({
+      success: true,
+      remainingCredits: currentCredits - 1,
+      attemptsAllowed: 2
+    }, { status: 200 });
+
   } catch (error) {
     console.error("Error:", error);
     return Response.json({ success: false, error: error }, { status: 500 });

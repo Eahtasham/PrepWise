@@ -91,6 +91,7 @@ export function AllInterviews({ user, interviews }: AllInterviewsProps) {
                       id={interview.id}
                       role={interview.role}
                       type={interview.type}
+                      attempts={interview.attempts}
                       finalized={interview.finalized}
                       coverImage={interview.coverImage}
                       techstack={interview.techstack}
@@ -128,6 +129,7 @@ export function AllInterviews({ user, interviews }: AllInterviewsProps) {
                       id={interview.id}
                       role={interview.role}
                       type={interview.type}
+                      attempts={interview.attempts}
                       finalized={interview.finalized}
                       coverImage={interview.coverImage}
                       techstack={interview.techstack}
@@ -165,6 +167,7 @@ export function AllInterviews({ user, interviews }: AllInterviewsProps) {
                       id={interview.id}
                       role={interview.role}
                       type={interview.type}
+                      attempts={interview.attempts}
                       finalized={interview.finalized}
                       coverImage={interview.coverImage}
                       techstack={interview.techstack}

@@ -14,11 +14,13 @@ const InterviewCard = async ({
     role,
     type,
     coverImage,
+    attempts,
     finalized,
     techstack,
     createdAt,
 }: InterviewCardProps) => {
     const feedback = userId && id ? await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
+    console.log("Attempts Left:", attempts);
 
     const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
     const badgeColor =
@@ -74,6 +76,23 @@ const InterviewCard = async ({
                             <p>{feedback?.totalScore || "---"}/100</p>
                         </div>
                     </div>
+                    <div>
+                        <p className={`text-sm mt-2 flex items-center gap-1 ${attempts === 0 ? 'text-red-500' :
+                                attempts === 1 ? 'text-yellow-500' :
+                                    'text-gray-500'
+                            }`}>
+                            {attempts === 0 && <span>⚠️</span>}
+                            {attempts === 1 && <span>⚡</span>}
+                            {(attempts ?? 0) > 1 && <span>✅</span>}
+
+                            {attempts ?? 0
+                                ? `${attempts ?? 0} Attempt${(attempts ?? 0) > 1 ? 's' : ''} Left`
+                                : attempts === 0
+                                    ? "No attempts remaining"
+                                    : "✅ 2 Attempts Left"
+                            }
+                        </p>
+                    </div>
 
                     {/* Feedback or Placeholder Text */}
                     <p className="line-clamp-2 mt-5">
@@ -83,7 +102,7 @@ const InterviewCard = async ({
                 </div>
                 <DisplayTechIcons techStack={techstack} />
                 <div className="flex flex-row justify-end gap-x-2">
-                    
+
                     {feedback && <Button className="w-fit !rounded-full !font-bold px-5 cursor-pointer min-h-10" variant="outline">
                         <Link
                             href={
@@ -95,7 +114,7 @@ const InterviewCard = async ({
                             {feedback ? "Retake Interview" : "View Interview"}
                         </Link>
                     </Button>
-}
+                    }
                     {<Button className="justify-end btn-primary">
                         <Link
                             href={

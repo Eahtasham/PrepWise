@@ -131,6 +131,9 @@ export async function createFeedback(params: CreateFeedbackParams) {
         };
 
         let feedbackRef;
+        const interviewDoc = await db.collection("interviews").doc(interviewId).get();
+        const interviewData = interviewDoc.data();
+        const currentAttempts = interviewData?.attempts ?? 0;
 
         if (feedbackId) {
             feedbackRef = db.collection("feedback").doc(feedbackId);
@@ -145,6 +148,9 @@ export async function createFeedback(params: CreateFeedbackParams) {
         batch.update(interviewRef, { finalized: true });
 
         await batch.commit();
+        await db.collection("interviews").doc(interviewId).update({
+            attempts: currentAttempts - 1
+        });
 
         return { success: true, feedbackId: feedbackRef.id };
     } catch (error) {
@@ -231,5 +237,121 @@ export async function getInterviewById(id: string): Promise<Interview | null> {
     return interview.data() as Interview | null;
 }
 
+export async function canRetakeInterview(interviewId: string, userId: string): Promise<{ canRetake: boolean; attemptsLeft: number; message?: string }> {
+    try {
+        const interviewDoc = await db.collection("interviews").doc(interviewId).get();
+        
+        if (!interviewDoc.exists) {
+            return {
+                canRetake: false,
+                attemptsLeft: 0,
+                message: "Interview not found."
+            };
+        }
+
+        const interviewData = interviewDoc.data();
+        
+        // Verify ownership
+        if (interviewData?.userId !== userId) {
+            return {
+                canRetake: false,
+                attemptsLeft: 0,
+                message: "Unauthorized access."
+            };
+        }
+
+        const currentAttempts = interviewData?.attempts ?? 0;
+        
+        if (currentAttempts <= 0) {
+            return {
+                canRetake: false,
+                attemptsLeft: 0,
+                message: "No more attempts remaining for this interview."
+            };
+        }
+
+        return {
+            canRetake: true,
+            attemptsLeft: currentAttempts
+        };
+
+    } catch (error) {
+        console.error("Error checking retake eligibility:", error);
+        return {
+            canRetake: false,
+            attemptsLeft: 0,
+            message: "Error checking interview status."
+        };
+    }
+}
+
+export async function consumeInterviewAttempt(interviewId: string, userId: string) {
+    try {
+        const interviewDoc = await db.collection("interviews").doc(interviewId).get();
+        
+        if (!interviewDoc.exists) {
+            return {
+                success: false,
+                message: "Interview not found."
+            };
+        }
+
+        const interviewData = interviewDoc.data();
+        
+        // Verify ownership
+        if (interviewData?.userId !== userId) {
+            return {
+                success: false,
+                message: "Unauthorized access."
+            };
+        }
+
+        const currentAttempts = interviewData?.attempts ?? 0;
+        
+        if (currentAttempts <= 0) {
+            return {
+                success: false,
+                message: "No more attempts remaining."
+            };
+        }
+
+        // Reduce attempts by 1
+        await db.collection("interviews").doc(interviewId).update({
+            attempts: currentAttempts - 1
+        });
+
+        return {
+            success: true,
+            attemptsLeft: currentAttempts - 1
+        };
+
+    } catch (error) {
+        console.error("Error consuming interview attempt:", error);
+        return {
+            success: false,
+            message: "Failed to process attempt."
+        };
+    }
+}
+
+
+export async function getUserCredits(userId: string): Promise<{ credits: number; success: boolean }> {
+    try {
+        const userDoc = await db.collection("users").doc(userId).get();
+        
+        if (!userDoc.exists) {
+            return { credits: 0, success: false };
+        }
+
+        const userData = userDoc.data();
+        const credits = userData?.credits ?? 0;
+
+        return { credits, success: true };
+
+    } catch (error) {
+        console.error("Error getting user credits:", error);
+        return { credits: 0, success: false };
+    }
+}
 
 

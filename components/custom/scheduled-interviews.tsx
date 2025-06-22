@@ -70,6 +70,7 @@ export function ScheduledInterviews({ user, interviews }: ScheduledInterviewsPro
                   id={interview.id}
                   role={interview.role}
                   type={interview.type}
+                  attempts={interview.attempts}
                   finalized={interview.finalized}
                   coverImage={interview.coverImage}
                   techstack={interview.techstack}

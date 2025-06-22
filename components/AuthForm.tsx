@@ -66,7 +66,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
           return;
         }
 
-        toast.success("Account created successfully, verify your email to continue");
+        toast.success("Account created successfully, verify your email inbox including Spam folder to continue");
+        setTimeout( () =>{
+
+        }, 3000);
         router.push("/sign-in");
       } else {
         // console.log("sing-in ", values)

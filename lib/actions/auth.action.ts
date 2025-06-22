@@ -44,6 +44,7 @@ export async function signUp(params: SignUpParams) {
             isVerified: false,
             isPro: false,
             provider: "email",
+            credits: 3, 
             createdAt: new Date().toISOString(),
             // profileURL,
             // resumeURL,
@@ -140,6 +141,7 @@ export async function oauthSignIn(params: OAuthSignInParams) {
                 email,
                 photoURL,
                 provider,
+                credits: 3, 
                 isVerified: true, // OAuth providers verify emails by default
                 isPro: false,
                 createdAt: new Date().toISOString(),
@@ -173,10 +175,10 @@ export async function oauthSignIn(params: OAuthSignInParams) {
 
 export async function getCurrentUser(): Promise<User | null> {
     const cookieStore = await cookies();
-    
+
     const sessionCookie = cookieStore.get("session")?.value || null;
 
-    if(!sessionCookie) return null;
+    if (!sessionCookie) return null;
 
     try {
         const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
@@ -186,15 +188,24 @@ export async function getCurrentUser(): Promise<User | null> {
             .get();
         if (!userRecord.exists) return null;
 
+        const userData = userRecord.data();
+
+        if (userData && userData.credits === undefined) {
+            await db.collection("users").doc(decodedClaims.uid).update({
+                credits: 3
+            });
+            userData.credits = 3;
+        }
+
         return {
             ...userRecord.data(),
             id: userRecord.id
         } as User
-            
+
     } catch (error) {
         console.error("Error getting current user:", error);
         return null;
-        
+
     }
 }
 
@@ -206,6 +217,72 @@ export async function isAuthenticated() {
 // Sign out user by clearing the session cookie
 export async function signOut() {
     const cookieStore = await cookies();
-  
+
     cookieStore.delete("session");
-  }
+}
+
+// NEW: Change password for email users only
+export async function changePassword(params: ChangePasswordParams) {
+    const { currentPassword, newPassword, idToken } = params;
+
+    try {
+        // Verify the ID token and get user info
+        const decodedToken = await auth.verifyIdToken(idToken);
+        const uid = decodedToken.uid;
+
+        // Get user from Firestore to check provider
+        const userDoc = await db.collection("users").doc(uid).get();
+        if (!userDoc.exists) {
+            return {
+                success: false,
+                message: "User not found.",
+            };
+        }
+
+        const userData = userDoc.data();
+
+        // Check if user is using email/password authentication
+        if (userData?.provider !== "email") {
+            return {
+                success: false,
+                message: "Password change is only available for email/password accounts.",
+            };
+        }
+
+        // Get user record from Firebase Auth
+        // const userRecord = await auth.getUser(uid);
+
+        // Update the user's password
+        await auth.updateUser(uid, {
+            password: newPassword,
+        });
+
+        return {
+            success: true,
+            message: "Password updated successfully.",
+        };
+
+    } catch (error: any) {
+        console.error("Error changing password:", error);
+
+        // Handle specific Firebase errors
+        if (error.code === "auth/weak-password") {
+            return {
+                success: false,
+                message: "Password should be at least 6 characters long.",
+            };
+        }
+
+        if (error.code === "auth/user-not-found") {
+            return {
+                success: false,
+                message: "User not found.",
+            };
+        }
+
+        return {
+            success: false,
+            message: "Failed to update password. Please try again.",
+        };
+    }
+}

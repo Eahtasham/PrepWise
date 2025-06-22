@@ -47,6 +47,7 @@ interface User {
   isVerified: boolean;
   isPro: boolean;
   provider: string;
+  credits: number;
   photoURL?: string;
   createdAt: string;
   id: string;
@@ -58,6 +59,7 @@ interface InterviewCardProps {
   role: string;
   type: string;
   coverImage?: string;
+  attempts?: number;
   finalized: boolean;
   techstack: string[];
   createdAt?: string;
@@ -118,6 +120,12 @@ interface OAuthSignInParams {
   idToken: string;
 }
 type FormType = "sign-in" | "sign-up";
+
+interface ChangePasswordParams {
+  currentPassword: string;
+  newPassword: string;
+  idToken: string;
+}
 
 interface InterviewFormProps {
   interviewId: string;
