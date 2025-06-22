@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { CalendarDays, Clock, TrendingUp, BarChart2, Users } from "lucide-react"
+import { CalendarDays, Clock, TrendingUp, BarChart2, Users, Crown } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -103,7 +103,10 @@ export default function DashboardContent({ user, userInterviews, latestInterview
       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-gray-400 mt-1">Welcome back, <span className="text-teal-500 font-semibold">{user?.name || "User"}</span> . Track your interview progress.</p>
+          <p className="text-gray-400 mt-1">Welcome back,  
+          <span className="text-teal-500 font-semibold ml-1">{user?.name || "User"}{user?.isPro ? <Crown height={20} width={20} className="inline-block ml-1 mr-1 text-amber-400" /> : ""}</span>
+          <span></span>
+             Track your interview progress.</p>
         </div>
 
         {/* Credit need to show properly */}
