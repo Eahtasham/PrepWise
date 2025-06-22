@@ -44,16 +44,16 @@ const navItems: NavItem[] = [
     href: "/dashboard/all-interviews",
     icon: ListTodo,
   },
-  // {
-  //   title: "Billing",
-  //   href: "/dashboard/billing",
-  //   icon: Receipt,
-  // },
-  // {
-  //   title: "Settings",
-  //   href: "/dashboard/settings",
-  //   icon: Settings,
-  // },
+  {
+    title: "Billing",
+    href: "/dashboard/billing",
+    icon: Receipt,
+  },
+  {
+    title: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
+  },
 ]
 
 export function DashboardShell({ children, user }: { children: React.ReactNode, user: any }) {
@@ -118,12 +118,12 @@ export function DashboardShell({ children, user }: { children: React.ReactNode, 
               <DropdownMenuContent align="end" className="w-56 bg-stone-950 border-gray-800">
                 <DropdownMenuLabel className="text-gray-300">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-800" />
-                {/* <DropdownMenuItem className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
+                <DropdownMenuItem className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
                   <User className="mr-2 h-4 w-4" /> Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
                   <Settings className="mr-2 h-4 w-4" /> Settings
-                </DropdownMenuItem> */}
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-gray-800" />
                 <DropdownMenuItem onClick={signOut} className="text-gray-300 hover:bg-gray-800 hover:text-teal-400 focus:bg-gray-800 focus:text-teal-400">
                   <LogOut className="mr-2 h-4 w-4" /> Log out

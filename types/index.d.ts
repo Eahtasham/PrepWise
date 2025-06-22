@@ -119,6 +119,12 @@ interface OAuthSignInParams {
 }
 type FormType = "sign-in" | "sign-up";
 
+interface ChangePasswordParams {
+  currentPassword: string;
+  newPassword: string;
+  idToken: string;
+}
+
 interface InterviewFormProps {
   interviewId: string;
   role: string;
