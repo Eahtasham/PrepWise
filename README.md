@@ -1,6 +1,9 @@
 # PrepWise
 PrepWise is an AI-powered interview preparation platform for Service Based Company designed to help users master their interview skills. It allows users to practice, prepare, and perfect their responses through realistic AI-driven interview simulations and receive detailed feedback.
 
+![image](https://github.com/user-attachments/assets/22b08923-561b-4218-b20a-14ce963045cb)
+
+
 ## Features
 
 *   **AI Interview Simulation:** Engage with a realistic AI interviewer for various job roles, industries, and difficulty levels. The AI leverages Google Gemini for question generation and Vapi AI for voice interaction.
