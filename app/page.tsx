@@ -28,6 +28,27 @@ import { isAuthenticated } from "@/lib/actions/auth.action"
 
 export default function Home() {
 
+    const handleBuyCredits = () => {
+        const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL
+        const subject = "Credit Purchase Request"
+        const body = `Hi there,
+
+I would like to purchase additional credits for my account.
+
+Account Details:
+- Name: 
+- Email: 
+
+Please let me know the available credit packages and payment options.
+
+Thank you!
+
+Best regards,`
+
+        const mailtoLink = `mailto:${adminEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+        window.open(mailtoLink, '_blank')
+    }
+
     const features = [
         {
             icon: <Mic className="h-10 w-10 text-teal-500" />,
@@ -575,7 +596,8 @@ export default function Home() {
                                     </ul>
 
                                     <div className="mt-8">
-                                        <Button
+                                        
+                                        <Button onClick={() => handleBuyCredits()}
                                             className={`w-full py-6 ${plan.highlighted
                                                 ? "bg-teal-500 hover:bg-teal-600 text-white"
                                                 : "bg-gray-700 hover:bg-gray-600 text-white"
