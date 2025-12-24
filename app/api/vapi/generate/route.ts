@@ -1,5 +1,6 @@
-import { generateText } from "ai";
+import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
+import { z } from "zod";
 
 import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
@@ -268,89 +269,46 @@ export async function POST(request: Request) {
       }, { status: 402 }); // 402 Payment Required
     }
 
-    // Base prompt for regular questions
-    const basePrompt = `Prepare questions for a job interview.
+    const isTechnical = type.toLowerCase() === 'technical';
+
+    const basePrompt = `Prepare ${amount} interview questions for a job interview.
       The context is: ${companyContext}
       The job role is ${role}.
       The job experience level is ${level}.
       The tech stack used in the job is: ${techstack}.
       The focus between behavioural and technical questions should lean towards: ${type}.
-      The amount of questions required is: ${amount}.`;
+      ${isTechnical ? "Include one additional moderately easy to medium DSA coding question." : "Do not include any coding questions."}`;
 
-    // Add restrictions based on interview type
-    const restrictions = type.toLowerCase() === 'technical'
-      ? `For the regular questions: Do not give questions which require text input or a whiteboard to solve.`
-      : `Do not give questions which require a code editor, text input or a whiteboard to solve.`;
-
-    // Add coding question instruction if type is Technical
-    const fullPrompt = type.toLowerCase() === 'technical'
-      ? `${basePrompt}
-        ${restrictions}
-        Important:
-        - Return only the questions, without additional text
-        - Avoid special characters that might break voice assistant
-        - Format regular questions like: ["Question 1", "Question 2"]
-        
-        Plus one additional moderatly easy to medium DSA coding question only related to on numberd arrays, character arrays, strings, (add linked list, queues based on experience)  at the end (separate from the ${amount} questions).
-        The coding question should be in this exact JSON format:
-        {
-          "title": "Problem Title",
-          "difficulty": "Easy/Medium/Hard",
-          "description": "Clear problem statement",
-          "examples": ["Input: example1, Output: result1", "Input: example2, Output: result2"]
-        }`
-      : `${basePrompt}
-        ${restrictions}
-        Important:
-        - Return only the questions, without additional text
-        - Avoid special characters that might break voice assistant
-        - Format like: ["Question 1", "Question 2"]`;
-
-    const { text: questions } = await generateText({
-      model: google("gemini-2.0-flash-001"),
-      prompt: fullPrompt,
+    const schema = z.object({
+      questions: z.array(z.string()).describe(`A list of ${amount} interview questions based on the requirements.`),
+      codingQuestion: z.object({
+        title: z.string(),
+        difficulty: z.enum(["Easy", "Medium", "Hard"]),
+        description: z.string(),
+        examples: z.array(z.string())
+      }).optional().nullable().describe("A DSA coding question, only if technical interview.")
     });
-    console.log("Generated Questions:", questions);
-    let questionsList: string[] = [];
+
+    const { object: data } = await generateObject({
+      model: google("gemini-2.0-flash-001"),
+      schema: schema,
+      prompt: basePrompt,
+    });
+
     let codingQuestion: CodeQuestion | null = null;
 
-    if (type.toLowerCase() === 'technical') {
-      try {
-        console.log("Raw Questions Response:", questions);
-        // Try to parse the response which should contain both regular questions and coding question
-        // Split the response into parts
-        const parts = questions.split('\n{');
-        console.log("Split Parts:", parts);
-
-        // Parse regular questions (first part)
-        questionsList = JSON.parse(parts[0].trim());
-        console.log("Parsed Regular Questions:", questionsList);
-
-        // Parse coding question (second part)
-        if (parts.length > 1) {
-          codingQuestion = JSON.parse(`{${parts[1].trim()}`);
-          console.log("Parsed Coding Question:", codingQuestion);
-        } else {
-          codingQuestion = {
-            title: `${techstack} Coding Problem`,
-            difficulty: "Medium",
-            description: `Implement a solution for a common ${techstack} problem`,
-            examples: []
-          };
-        }
-      } catch (e) {
-        // Fallback if parsing fails
-        questionsList = JSON.parse(questions);
+    if (isTechnical) {
+      if (data.codingQuestion) {
+        codingQuestion = data.codingQuestion as CodeQuestion;
+      } else {
+        // Fallback if model missed it
         codingQuestion = {
           title: `${techstack} Coding Problem`,
           difficulty: "Medium",
           description: `Implement a solution for a common ${techstack} problem`,
           examples: []
         };
-
       }
-    } else {
-      questionsList = JSON.parse(questions);
     }
 
     const interview = {
@@ -358,8 +316,8 @@ export async function POST(request: Request) {
       type: type,
       level: level,
       techstack: techstack.split(","),
-      questions: questionsList,
-      codingQuestion: codingQuestion || null,
+      questions: data.questions,
+      codingQuestion: codingQuestion,
       company: company,
       userId: userid,
       attempts: 2,
@@ -372,8 +330,6 @@ export async function POST(request: Request) {
     await db.collection("users").doc(userid).update({
       credits: currentCredits - 1,
     });
-
-    
 
     return Response.json({
       success: true,
